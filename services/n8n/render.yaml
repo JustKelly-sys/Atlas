@@ -1,0 +1,81 @@
+# Atlas n8n — self-hosted on Render
+# Runs the official n8nio/n8n Docker image, persists state to Supabase (n8n schema).
+#
+# Deploy via Render dashboard: New > Blueprint > point at this repo,
+# pick services/n8n/render.yaml. Fill sync:false env vars on first deploy.
+
+services:
+  - type: web
+    name: atlas-n8n
+    runtime: image
+    region: frankfurt
+    plan: free
+    image:
+      url: docker.io/n8nio/n8n:latest
+    autoDeploy: false
+    healthCheckPath: /healthz
+    envVars:
+      # Basic auth (admin UI login)
+      - key: N8N_BASIC_AUTH_ACTIVE
+        value: "true"
+      - key: N8N_BASIC_AUTH_USER
+        value: admin
+      - key: N8N_BASIC_AUTH_PASSWORD
+        sync: false
+
+      # Encryption of stored credentials inside n8n
+      - key: N8N_ENCRYPTION_KEY
+        sync: false
+
+      # Webhook URL (predictable: matches service name)
+      - key: WEBHOOK_URL
+        value: https://atlas-n8n.onrender.com/
+      - key: N8N_EDITOR_BASE_URL
+        value: https://atlas-n8n.onrender.com/
+
+      # Timezone + host
+      - key: GENERIC_TIMEZONE
+        value: Africa/Johannesburg
+      - key: N8N_HOST
+        value: atlas-n8n.onrender.com
+      - key: N8N_PROTOCOL
+        value: https
+      - key: N8N_PORT
+        value: "5678"
+
+      # Runtime mode
+      - key: N8N_RUNNERS_ENABLED
+        value: "true"
+      - key: EXECUTIONS_MODE
+        value: regular
+
+      # Supabase Postgres (session pooler, n8n schema)
+      - key: DB_TYPE
+        value: postgresdb
+      - key: DB_POSTGRESDB_HOST
+        value: aws-1-eu-central-1.pooler.supabase.com
+      - key: DB_POSTGRESDB_PORT
+        value: "5432"
+      - key: DB_POSTGRESDB_DATABASE
+        value: postgres
+      - key: DB_POSTGRESDB_SCHEMA
+        value: n8n
+      - key: DB_POSTGRESDB_USER
+        value: postgres.lyvtxizoenxigezrqibz
+      - key: DB_POSTGRESDB_PASSWORD
+        sync: false
+      - key: DB_POSTGRESDB_SSL_ENABLED
+        value: "true"
+      - key: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
+        value: "false"
+
+      # Logging
+      - key: N8N_LOG_LEVEL
+        value: info
+      - key: N8N_METRICS
+        value: "true"
+
+    disk:
+      name: n8n-data
+      mountPath: /home/node/.n8n
+      sizeGB: 1
