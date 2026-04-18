@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: atlas-calendar-sentinel
+    runtime: docker
+    region: frankfurt
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /health
+    dockerfilePath: ./services/calendar-sentinel-mcp/Dockerfile
+    dockerContext: ./services/calendar-sentinel-mcp
+    envVars:
+      - key: SUPABASE_URL
+        value: https://lyvtxizoenxigezrqibz.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: PYTHON_SERVICE_SECRET
+        sync: false
