@@ -32,7 +32,7 @@ export type VarianceRow = {
     currency: string;
     flag_emoji: string | null;
   } | null;
-  payroll_cycles: { period_label: string } | null;
+  payroll_cycles: { cycle_month: string } | null;
 };
 
 const CAUSE_STYLE: Record<
@@ -140,7 +140,9 @@ export function VarianceTable({
                     </div>
                   </td>
                   <td className="py-3 px-4 font-mono text-xs text-[color:var(--ink-tertiary)] tabular-nums">
-                    {r.payroll_cycles?.period_label ?? "—"}
+                    {r.payroll_cycles?.cycle_month
+                      ? formatDate(r.payroll_cycles.cycle_month, "short")
+                      : "—"}
                   </td>
                   <td
                     className="py-3 px-4 font-mono tabular-nums text-right text-sm"

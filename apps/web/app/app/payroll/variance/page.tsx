@@ -32,7 +32,7 @@ export default function VariancePage() {
     const { data } = await sb
       .from("variances")
       .select(
-        "id,cycle_id,variance_amount,variance_pct,threshold_crossed,cause_category,narration_text,narration_model,flagged_for_review,created_at,countries(iso_code,name,currency,flag_emoji),payroll_cycles(period_label)",
+        "id,cycle_id,variance_amount,variance_pct,threshold_crossed,cause_category,narration_text,narration_model,flagged_for_review,created_at,countries(iso_code,name,currency,flag_emoji),payroll_cycles(cycle_month)",
       )
       .order("created_at", { ascending: false })
       .limit(40);
@@ -51,10 +51,14 @@ export default function VariancePage() {
     }));
     setRows(flat);
 
-    // Build trend: aggregate by cycle period_label
+    // Build trend: aggregate by cycle month
     const byPeriod = new Map<string, { current: number; prior: number }>();
     for (const r of flat) {
-      const period = r.payroll_cycles?.period_label ?? "—";
+      const period = r.payroll_cycles?.cycle_month
+        ? new Date(r.payroll_cycles.cycle_month).toLocaleString("en-GB", {
+            month: "short",
+          })
+        : "—";
       const bucket = byPeriod.get(period) ?? { current: 0, prior: 0 };
       bucket.current += Math.abs(r.variance_amount);
       bucket.prior += Math.abs(r.variance_amount) * 0.85;
