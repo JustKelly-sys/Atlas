@@ -27,7 +27,7 @@ Exported workflow JSON lives in `workflows/` and is the source of truth. Import 
 
 ### First-login flow
 
-Once live at `https://atlas-n8n.onrender.com`:
+Once live at `https://atlas-n8n-n64s.onrender.com`:
 
 1. Authenticate with basic auth: user `admin`, password from step 5 above.
 2. Complete the n8n setup wizard (owner account — reuse `demo@atlas-ops.app` or a personal email).
@@ -74,11 +74,11 @@ Open `http://localhost:5678`.
 
 After deploy, the workflows listen at:
 
-- `https://atlas-n8n.onrender.com/webhook/input-parser`
-- `https://atlas-n8n.onrender.com/webhook/termination`
+- `https://atlas-n8n-n64s.onrender.com/webhook/input-parser`
+- `https://atlas-n8n-n64s.onrender.com/webhook/termination`
 
 Both require `X-Playroll-Auth: <N8N_WEBHOOK_SECRET>` header. The Next.js API routes add this automatically.
 
 ## Cold starts
 
-Render free tier spins down after 15 minutes of inactivity. First request after that takes ~30 seconds. Before any demo click-through, hit `https://atlas-n8n.onrender.com/healthz` to warm the service.
+Render free tier spins down after 15 minutes of inactivity. First request after that takes ~30 seconds. Before any demo click-through, hit `https://atlas-n8n-n64s.onrender.com/healthz` to warm the service.

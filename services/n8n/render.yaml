@@ -29,23 +29,22 @@ services:
 
       # Webhook URL (predictable: matches service name)
       - key: WEBHOOK_URL
-        value: https://atlas-n8n.onrender.com/
+        value: https://atlas-n8n-n64s.onrender.com/
       - key: N8N_EDITOR_BASE_URL
-        value: https://atlas-n8n.onrender.com/
+        value: https://atlas-n8n-n64s.onrender.com/
 
       # Timezone + host
       - key: GENERIC_TIMEZONE
         value: Africa/Johannesburg
       - key: N8N_HOST
-        value: atlas-n8n.onrender.com
+        value: atlas-n8n-n64s.onrender.com
       - key: N8N_PROTOCOL
         value: https
       - key: N8N_PORT
         value: "10000"
 
       # Runtime mode
-      - key: N8N_RUNNERS_ENABLED
-        value: "true"
+      # (N8N_RUNNERS_ENABLED removed — deprecated, no longer needed)
       - key: EXECUTIONS_MODE
         value: regular
 
