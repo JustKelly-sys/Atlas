@@ -48,6 +48,13 @@ services:
       - key: EXECUTIONS_MODE
         value: regular
 
+      # Allow $env.* access in workflow expressions (needed because our
+      # workflows read SUPABASE_URL / SERVICE_ROLE_KEY / GEMINI_API_KEY
+      # via ={{$env.*}} in HTTP Request nodes). Default is 'true' which
+      # blocks env access as a security measure.
+      - key: N8N_BLOCK_ENV_ACCESS_IN_NODE
+        value: "false"
+
       # Supabase Postgres (session pooler, n8n schema)
       - key: DB_TYPE
         value: postgresdb
