@@ -75,7 +75,6 @@ services:
       - key: N8N_METRICS
         value: "true"
 
-    disk:
-      name: n8n-data
-      mountPath: /home/node/.n8n
-      sizeGB: 1
+      # No persistent disk (free tier limit) — all state lives in
+      # Supabase Postgres via DB_POSTGRESDB_*. Ephemeral filesystem
+      # is fine because workflows are imported from git.
