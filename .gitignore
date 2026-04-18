@@ -61,3 +61,6 @@ venv/
 *.local
 coverage/
 .nyc_output/
+
+# secrets
+scripts/demo_users.json
