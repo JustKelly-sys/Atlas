@@ -41,7 +41,7 @@ services:
       - key: N8N_PROTOCOL
         value: https
       - key: N8N_PORT
-        value: "5678"
+        value: "10000"
 
       # Runtime mode
       - key: N8N_RUNNERS_ENABLED
