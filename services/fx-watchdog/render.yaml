@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: atlas-fx-watchdog
+    runtime: docker
+    region: frankfurt
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /health
+    dockerfilePath: ./services/fx-watchdog/Dockerfile
+    dockerContext: ./services/fx-watchdog
+    envVars:
+      - key: SUPABASE_URL
+        value: https://lyvtxizoenxigezrqibz.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: PYTHON_SERVICE_SECRET
+        sync: false
