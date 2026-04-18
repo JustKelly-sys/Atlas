@@ -1,9 +1,11 @@
-# Playroll Ops — Design Spec
+# Atlas — Design Spec
+
+**Codename / product brand:** Atlas. A payroll operations suite built as a portfolio piece targeting Playroll as the primary hiring audience, designed to work as a general senior-fullstack showcase beyond that.
 
 | Field | Value |
 |---|---|
 | Date | 2026-04-18 |
-| Author | Kelly Jafta |
+| Author | Tshepiso Jafta |
 | Status | Approved for implementation |
 | Target ship | 2026-04-20 (Sunday 23:00) |
 | Target hiring audience | Playroll (primary), general senior fullstack hiring managers (secondary) |
@@ -12,7 +14,7 @@
 
 ## 1. Goal
 
-Build a **functional payroll operations dashboard** that serves as a portfolio artefact for a Senior Global Payroll Operations Associate application at Playroll (and, more broadly, as a senior fullstack engineering showcase).
+Build **Atlas**, a functional payroll operations dashboard that serves as a portfolio artefact for a Senior Global Payroll Operations Associate application at Playroll (and, more broadly, as a senior fullstack engineering showcase).
 
 The dashboard must:
 
@@ -23,8 +25,8 @@ The dashboard must:
 
 ## 2. Success criteria
 
-- `https://playroll-ops.vercel.app` loads a polished marketing landing for anonymous visitors
-- Demo sign-in at `demo@playroll-ops.app` renders the authenticated suite in < 2s
+- `https://atlas-ops.vercel.app` loads a polished marketing landing for anonymous visitors
+- Demo sign-in at `demo@atlas-ops.app` renders the authenticated suite in < 2s
 - All 5 innovation pages navigable, each executes at least one real external API call when exercised (Claude, ExchangeRate-API, or OpenHolidaysAPI)
 - Both light and dark themes render cleanly on every page
 - GitHub repo is public, MIT licensed, installable via `pnpm install && pnpm dev` in < 5 minutes on a fresh clone
@@ -161,7 +163,7 @@ Sidebar 240px + Header 56px + main content at max-width 1440px with 48px gutters
 ### Top-level navigation (8 sections)
 
 ```
-PLAYROLL OPS                                          (wordmark, serif display)
+ATLAS                                                 (wordmark, serif display)
 
 ● Dashboard                        /                  [Live]
 ● Payroll                          /payroll           [Live]
@@ -210,7 +212,7 @@ main content
 - `/` public marketing landing (SEO-indexable)
 - `/sign-in` `/sign-up` Supabase Auth
 - `/app/*` route group — authenticated, RLS-protected
-- Demo account: `demo@playroll-ops.app` with 48 employees across 6 countries (ZA, GB, US, DE, AU, AE)
+- Demo account: `demo@atlas-ops.app` with 48 employees across 6 countries (ZA, GB, US, DE, AU, AE)
 
 ## 8. Page-by-page layout
 
@@ -218,7 +220,7 @@ main content
 
 Layout rows (top to bottom):
 
-1. **Page header**: eyebrow (OPERATIONS · APRIL 2026), serif greeting ("Good morning, Kelly."), subtitle with cycle/cutoff/country count
+1. **Page header**: eyebrow (OPERATIONS · APRIL 2026), serif greeting ("Good morning, Tshepiso."), subtitle with cycle/cutoff/country count
 2. **Cycle status (70%) + Critical alerts (30%) split**: total payroll + delta + country-allocation bar + cutoff countdown / 2 items needing attention
 3. **The Five hero strip**: 5 cards in a row, one per innovation, each showing primary metric + status tag + arrow to dedicated page
 4. **KPI strip**: 5 columns — accuracy %, on-time payment %, cycle time days, query response hours, compliance filing % — every metric with a delta (Plausible principle)
@@ -283,7 +285,7 @@ Three sub-sections as empty states: Users & Permissions, Pay Schedules, Tax Tabl
 
 ### 8.16 `/` — Marketing landing (public)
 
-Single scroll. Hero with serif display + Optikka-style grid corners. Sections: problem (21 niche pain summary), five automations bento, credibility (Dedukto MCP architecture, ADP Jan-2026 context). Footer: "Built for a Playroll application."
+Single scroll. Hero with serif display + Optikka-style grid corners. Sections: problem (21 niche pain summary), five automations bento, credibility (Dedukto MCP architecture, ADP Jan-2026 context). Footer: "Atlas · built for a Playroll application by Tshepiso Jafta."
 
 ## 9. Data model
 
@@ -321,7 +323,7 @@ Reference tables are readable by any authenticated user.
 
 ### Seed (one TypeScript file, `supabase/seed.ts`)
 
-- 1 organisation ("Playroll Ops Demo")
+- 1 organisation ("Atlas Demo")
 - 2 users (owner + viewer)
 - 6 countries (ZA / GB / US / DE / AU / AE) with metadata
 - ~90 public holidays for 2026-2027
@@ -345,7 +347,7 @@ Six services total.
 
 | Service | Stack | Host |
 |---|---|---|
-| playroll-ops-web | Next.js 16 + React 19 + TS + Tailwind v4 | Vercel |
+| atlas-web | Next.js 16 + React 19 + TS + Tailwind v4 | Vercel |
 | Supabase project | Postgres + Auth | Supabase Cloud |
 | n8n (self-hosted) | n8nio/n8n Docker | Render |
 | variance-narrator-mcp | Python + FastAPI + MCP SDK | Render |
@@ -382,7 +384,7 @@ README ships with Claude Desktop MCP config snippet so a hiring manager can poin
 ### Repository structure
 
 ```
-playroll-ops/
+atlas/
 ├── apps/web/                       Next.js app
 ├── services/
 │   ├── n8n/workflows/              exported JSON

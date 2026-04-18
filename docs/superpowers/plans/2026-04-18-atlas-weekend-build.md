@@ -1,8 +1,8 @@
-# Playroll Ops Weekend Build — Implementation Plan
+# Atlas Weekend Build — Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship a live, hiring-manager-ready Playroll Ops dashboard at `playroll-ops.vercel.app` by Sunday 23:00 — Next.js + Supabase frontend, six deployed services, five live AI-powered payroll automations, editorial dashboard aesthetic.
+**Goal:** Ship a live, hiring-manager-ready Atlas dashboard at `atlas-ops.vercel.app` by Sunday 23:00 — Next.js + Supabase frontend, six deployed services, five live AI-powered payroll automations, editorial dashboard aesthetic.
 
 **Architecture:** Monorepo (pnpm + Turborepo) with Next.js 16 frontend on Vercel, Supabase Postgres + Auth, self-hosted n8n + three Python MCP/FastAPI services on Render. All five signature innovations wired end-to-end: Input Parser (n8n + Claude Haiku), FX Watchdog (Python + ExchangeRate-API), Variance Narrator (Python MCP + Claude Sonnet, extends Dedukto pattern), Termination Checklist Bot (n8n + Claude Sonnet), Calendar Sentinel (Python MCP + OpenHolidaysAPI, extends Dedukto pattern).
 
@@ -21,7 +21,7 @@
 
 ### Repository root
 ```
-playroll-ops/
+atlas/
 ├── .github/workflows/ci.yml
 ├── .gitignore
 ├── LICENSE                              — MIT
@@ -135,12 +135,12 @@ n8n directory ships exported workflow JSON + self-host config.
 ### Task 1.1: Repository bootstrap (18:00, 30 min)
 
 **Files:**
-- Create: `playroll-ops/.gitignore`
-- Create: `playroll-ops/LICENSE`
-- Create: `playroll-ops/package.json`
-- Create: `playroll-ops/pnpm-workspace.yaml`
-- Create: `playroll-ops/turbo.json`
-- Create: `playroll-ops/README.md` (stub)
+- Create: `atlas/.gitignore`
+- Create: `atlas/LICENSE`
+- Create: `atlas/package.json`
+- Create: `atlas/pnpm-workspace.yaml`
+- Create: `atlas/turbo.json`
+- Create: `atlas/README.md` (stub)
 
 - [ ] **Step 1: Create `.gitignore`**
 
@@ -164,7 +164,7 @@ venv/
 .venv/
 ```
 
-- [ ] **Step 2: Create `LICENSE` with MIT text, © 2026 Kelly Jafta**
+- [ ] **Step 2: Create `LICENSE` with MIT text, © 2026 Tshepiso Jafta**
 
 - [ ] **Step 3: Create `pnpm-workspace.yaml`**
 
@@ -178,7 +178,7 @@ packages:
 
 ```json
 {
-  "name": "playroll-ops",
+  "name": "atlas",
   "private": true,
   "version": "0.0.1",
   "packageManager": "pnpm@9.0.0",
@@ -216,16 +216,16 @@ packages:
 - [ ] **Step 6: Create `README.md` stub**
 
 ```markdown
-# Playroll Ops
+# Atlas
 
 A portfolio-grade payroll operations dashboard. Full README ships Sunday.
 
-See `docs/superpowers/specs/2026-04-18-playroll-ops-design.md` for design.
+See `docs/superpowers/specs/2026-04-18-atlas-design.md` for design.
 ```
 
 - [ ] **Step 7: Install root dependencies**
 
-Run: `cd playroll-ops && pnpm install`
+Run: `cd atlas && pnpm install`
 Expected: `Done in N.Ns`
 
 - [ ] **Step 8: Commit**
@@ -240,7 +240,7 @@ git commit -m "chore: bootstrap pnpm workspace + turborepo + license"
 ### Task 1.2: Supabase project + CLI (18:30, 30 min)
 
 **Files:**
-- Create: `playroll-ops/supabase/config.toml` (via `supabase init`)
+- Create: `atlas/supabase/config.toml` (via `supabase init`)
 
 - [ ] **Step 1: Install Supabase CLI globally**
 
@@ -249,11 +249,11 @@ Verify: `supabase --version`
 
 - [ ] **Step 2: Create Supabase project at supabase.com**
 
-Manual: create project `playroll-ops`, region closest to Render EU-West, save database password.
+Manual: create project `atlas`, region closest to Render EU-West, save database password.
 
 - [ ] **Step 3: Initialize Supabase locally**
 
-Run: `cd playroll-ops && supabase init`
+Run: `cd atlas && supabase init`
 Expected: creates `supabase/config.toml`
 
 - [ ] **Step 4: Link to remote project**
@@ -996,7 +996,7 @@ git commit -m "feat(db): RLS policies across all org-scoped tables"
 - [ ] **Step 1: Scaffold Next.js app**
 
 ```bash
-cd playroll-ops
+cd atlas
 pnpm dlx create-next-app@latest apps/web \
   --typescript --tailwind --app --eslint \
   --src-dir=false --import-alias="@/*" \
@@ -1213,7 +1213,7 @@ import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Playroll Ops",
+  title: "Atlas",
   description: "Payroll operations suite built for global employers",
 };
 
@@ -1410,7 +1410,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 export default function SignInPage() {
-  const [email, setEmail] = useState("demo@playroll-ops.app");
+  const [email, setEmail] = useState("demo@atlas-ops.app");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -1428,7 +1428,7 @@ export default function SignInPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="eyebrow">Playroll Ops · Sign in</p>
+        <p className="eyebrow">Atlas · Sign in</p>
         <h1 className="font-display text-[36px] leading-[1.1] tracking-[-0.015em] mt-2">
           Welcome back.
         </h1>
@@ -1441,7 +1441,7 @@ export default function SignInPage() {
         </Button>
       </form>
       <p className="text-sm text-[var(--color-ink-secondary)]">
-        Demo: demo@playroll-ops.app · password provided in README.
+        Demo: demo@atlas-ops.app · password provided in README.
       </p>
     </div>
   );
@@ -1500,7 +1500,7 @@ export default function HomePage() {
     <main className="min-h-screen flex items-center justify-center">
       <div className="text-center space-y-6">
         <p className="eyebrow">Coming 20 April</p>
-        <h1 className="font-display text-[64px] leading-[1] tracking-[-0.02em]">Playroll Ops</h1>
+        <h1 className="font-display text-[64px] leading-[1] tracking-[-0.02em]">Atlas</h1>
         <Link href="/sign-in" className="underline decoration-[var(--color-accent)] underline-offset-4">
           Sign in
         </Link>
@@ -1512,7 +1512,7 @@ export default function HomePage() {
 
 - [ ] **Step 7: Create demo user manually via Supabase dashboard**
 
-Manual: Auth → Users → Invite → `demo@playroll-ops.app` with temporary password. Save password to `.env` for README.
+Manual: Auth → Users → Invite → `demo@atlas-ops.app` with temporary password. Save password to `.env` for README.
 
 - [ ] **Step 8: Test sign-in flow end to end**
 
@@ -1840,8 +1840,8 @@ Similar fixture files: `holidays.ts` (OpenHolidaysAPI snapshot for 2026-2027 per
 
 #### 2.4c: Organisation + users (10 min)
 
-- [ ] Create org "Playroll Ops Demo" with slug `playroll-ops-demo`
-- [ ] Fetch `demo@playroll-ops.app` auth user, insert profile, link to org as `owner`
+- [ ] Create org "Atlas Demo" with slug `atlas-demo`
+- [ ] Fetch `demo@atlas-ops.app` auth user, insert profile, link to org as `owner`
 - [ ] Create viewer user, link as `viewer`
 
 #### 2.4d: Employees (20 min)
@@ -2539,7 +2539,7 @@ Lunch.
 - [ ] Problem section: 21 niche pains as dense paragraph with pull-quote treatment
 - [ ] Five builds bento grid
 - [ ] Credibility: Dedukto MCP architecture callout, ADP Jan-2026 context framed as opportunity
-- [ ] Footer: "Built for a Playroll application by Kelly Jafta · April 2026"
+- [ ] Footer: "Atlas · built for a Playroll application by Tshepiso Jafta · April 2026"
 - [ ] Single-scroll, no marketing fluff
 - [ ] Commit
 
@@ -2667,7 +2667,7 @@ All types and names match across tasks.
 
 ---
 
-**Plan complete and saved to `playroll-ops/docs/superpowers/plans/2026-04-18-playroll-ops-weekend-build.md`.**
+**Plan complete and saved to `atlas/docs/superpowers/plans/2026-04-18-atlas-weekend-build.md`.**
 
 Two execution options:
 
