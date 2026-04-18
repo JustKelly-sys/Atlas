@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { PageHeader } from "@/components/shell/PageHeader";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -10,13 +11,22 @@ export default async function DashboardPage() {
     "there";
 
   return (
-    <div className="space-y-12">
-      <div className="space-y-3">
-        <p className="eyebrow">Operations · April 2026</p>
-        <h1 className="display-xl">Good morning, {firstName}.</h1>
-        <p className="text-muted-foreground max-w-xl">
-          Dashboard home lands Saturday afternoon (Task 3.5-3.8).
-          Shell wiring in 1.15, then real widgets.
+    <div className="space-y-10">
+      <PageHeader
+        eyebrow="Operations · April 2026"
+        title={`Good morning, ${firstName}.`}
+        subtitle="Payroll cycle 12 of 12 · 6 countries · current cutoff in 3 days."
+      />
+
+      {/* Placeholder content — widgets arrive in Tasks 3.5 through 4.1 */}
+      <div className="rounded-sm border border-[color:var(--rule)] bg-card p-8 text-center space-y-3">
+        <p className="eyebrow">Under construction</p>
+        <p className="font-display text-2xl">
+          Widgets arriving Saturday afternoon.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Cycle status · Critical alerts · The Five · KPI strip · Country grid ·
+          Activity feed · Upcoming filings
         </p>
       </div>
     </div>

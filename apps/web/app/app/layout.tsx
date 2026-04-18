@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { Sidebar } from "@/components/shell/Sidebar";
+import { Header } from "@/components/shell/Header";
 
 export default async function AppShellLayout({
   children,
@@ -13,12 +15,15 @@ export default async function AppShellLayout({
 
   if (!user) redirect("/sign-in");
 
-  // Shell (Sidebar + Header) wired in Task 1.15.
   return (
     <div className="min-h-screen flex bg-background">
-      <main className="flex-1 p-8 max-w-[1440px] mx-auto w-full">
-        {children}
-      </main>
+      <Sidebar />
+      <div className="flex-1 flex flex-col min-w-0">
+        <Header userEmail={user.email ?? ""} />
+        <main className="flex-1 p-8 max-w-[1440px] mx-auto w-full">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
