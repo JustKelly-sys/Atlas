@@ -51,29 +51,27 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.anthropic.com/v1/messages",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={{$env.GEMINI_API_KEY}}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "x-api-key", "value": "={{$env.ANTHROPIC_API_KEY}}" },
-            { "name": "anthropic-version", "value": "2023-06-01" },
-            { "name": "content-type", "value": "application/json" }
+            { "name": "Content-Type", "value": "application/json" }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"claude-haiku-4-5-20251001\",\n  \"max_tokens\": 800,\n  \"system\": \"You are a payroll input parser. Extract structured fields from unstructured HR messages and return a single JSON object. Schema: { employee_name_guess: string, country_hint: string, change_type: 'bonus'|'address'|'salary'|'leave'|'tax_code'|'bank_change'|'other', amount: number|null, currency: string|null, effective_date: string|null, confidence_scores: { [field]: number 0-1 }, ambiguity_flags: string[] }. Return ONLY the JSON object — no prose, no markdown fences.\",\n  \"messages\": [{ \"role\": \"user\", \"content\": {{ JSON.stringify($json[0].raw_text) }} }]\n}",
+        "jsonBody": "={\n  \"systemInstruction\": {\n    \"parts\": [{ \"text\": \"You are a payroll input parser. Given an unstructured HR message (email, Slack, WhatsApp), extract structured fields according to the strict schema. Return confidence_scores as decimals between 0 and 1 for each extracted field. Add ambiguity_flags for anything unclear (missing employee name, missing currency, unclear intent, etc.). Do not hallucinate values — use null if unsure. Do not wrap in markdown. Output ONLY the JSON object.\" }]\n  },\n  \"contents\": [{\n    \"role\": \"user\",\n    \"parts\": [{ \"text\": {{ JSON.stringify($json[0].raw_text) }} }]\n  }],\n  \"generationConfig\": {\n    \"temperature\": 0.1,\n    \"maxOutputTokens\": 800,\n    \"responseMimeType\": \"application/json\",\n    \"responseSchema\": {\n      \"type\": \"OBJECT\",\n      \"properties\": {\n        \"employee_name_guess\": { \"type\": \"STRING\", \"nullable\": true },\n        \"country_hint\": { \"type\": \"STRING\", \"nullable\": true },\n        \"change_type\": {\n          \"type\": \"STRING\",\n          \"enum\": [\"bonus\",\"address\",\"salary\",\"leave\",\"tax_code\",\"bank_change\",\"other\"]\n        },\n        \"amount\": { \"type\": \"NUMBER\", \"nullable\": true },\n        \"currency\": { \"type\": \"STRING\", \"nullable\": true },\n        \"effective_date\": { \"type\": \"STRING\", \"nullable\": true },\n        \"confidence_scores\": {\n          \"type\": \"OBJECT\",\n          \"properties\": {\n            \"employee\": { \"type\": \"NUMBER\" },\n            \"change_type\": { \"type\": \"NUMBER\" },\n            \"amount\": { \"type\": \"NUMBER\" },\n            \"effective_date\": { \"type\": \"NUMBER\" }\n          }\n        },\n        \"ambiguity_flags\": {\n          \"type\": \"ARRAY\",\n          \"items\": { \"type\": \"STRING\" }\n        }\n      },\n      \"required\": [\"change_type\",\"confidence_scores\",\"ambiguity_flags\"]\n    }\n  }\n}",
         "options": {}
       },
       "id": "a1000001-0000-4000-8000-000000000003",
-      "name": "Claude Haiku parse",
+      "name": "Gemini parse",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [700, 300]
     },
     {
       "parameters": {
-        "jsCode": "// Parse Claude's JSON output, compute overall confidence.\nconst msg = $input.first().json;\nconst prevNodes = $('Fetch message').all();\nconst messageRow = prevNodes[0].json;\nconst messageId = messageRow.id;\n\nconst rawText = msg.content?.[0]?.text ?? '';\n// Claude sometimes wraps in markdown — strip any ```json fences.\nconst match = rawText.match(/\\{[\\s\\S]*\\}/);\nif (!match) {\n  throw new Error('No JSON object in Claude output: ' + rawText.slice(0, 200));\n}\nconst parsed = JSON.parse(match[0]);\n\n// Overall confidence = min of per-field confidences, or 0.5 if none.\nconst scores = Object.values(parsed.confidence_scores ?? {});\nconst overall = scores.length\n  ? Math.min(...scores.map((n) => Number(n) || 0))\n  : 0.5;\n\nreturn [{\n  json: {\n    message_id: messageId,\n    parsed_fields: parsed,\n    ambiguity_flags: parsed.ambiguity_flags ?? [],\n    confidence_overall: Number(overall.toFixed(2)),\n    raw_text: messageRow.raw_text,\n  },\n}];"
+        "jsCode": "// Gemini 2.5 Flash returns JSON guaranteed by responseSchema.\nconst resp = $input.first().json;\nconst messageRow = $('Fetch message').first().json;\nconst messageId = messageRow.id;\n\nconst rawText = resp.candidates?.[0]?.content?.parts?.[0]?.text ?? '';\nif (!rawText) {\n  throw new Error('Empty Gemini response: ' + JSON.stringify(resp).slice(0, 300));\n}\nconst parsed = JSON.parse(rawText);\n\n// Overall confidence = min of per-field confidences, or 0.5 if none.\nconst scores = Object.values(parsed.confidence_scores ?? {});\nconst overall = scores.length\n  ? Math.min(...scores.map((n) => Number(n) || 0))\n  : 0.5;\n\nreturn [{\n  json: {\n    message_id: messageId,\n    parsed_fields: parsed,\n    ambiguity_flags: parsed.ambiguity_flags ?? [],\n    confidence_overall: Number(overall.toFixed(2)),\n    organization_id: messageRow.organization_id,\n  },\n}];"
       },
       "id": "a1000001-0000-4000-8000-000000000004",
       "name": "Parse + score",
@@ -119,7 +117,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"organization_id\": \"{{ $('Fetch message').first().json.organization_id }}\",\n  \"actor_type\": \"system\",\n  \"action\": \"input_parsed\",\n  \"target_type\": \"input_message\",\n  \"target_id\": \"{{ $('Parse + score').first().json.message_id }}\",\n  \"metadata\": { \"confidence\": {{ $('Parse + score').first().json.confidence_overall }}, \"source\": \"input-parser-workflow\" }\n}",
+        "jsonBody": "={\n  \"organization_id\": \"{{ $('Parse + score').first().json.organization_id }}\",\n  \"actor_type\": \"system\",\n  \"action\": \"input_parsed\",\n  \"target_type\": \"input_message\",\n  \"target_id\": \"{{ $('Parse + score').first().json.message_id }}\",\n  \"metadata\": { \"confidence\": {{ $('Parse + score').first().json.confidence_overall }}, \"model\": \"gemini-2.5-flash\", \"source\": \"input-parser-workflow\" }\n}",
         "options": {}
       },
       "id": "a1000001-0000-4000-8000-000000000006",
@@ -131,7 +129,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={\n  \"success\": true,\n  \"parse_result_id\": \"{{ $('Insert parse_result').first().json[0].id }}\",\n  \"confidence\": {{ $('Parse + score').first().json.confidence_overall }},\n  \"ambiguity_flags\": {{ JSON.stringify($('Parse + score').first().json.ambiguity_flags) }}\n}",
+        "responseBody": "={\n  \"success\": true,\n  \"parse_result_id\": \"{{ $('Insert parse_result').first().json[0].id }}\",\n  \"confidence\": {{ $('Parse + score').first().json.confidence_overall }},\n  \"ambiguity_flags\": {{ JSON.stringify($('Parse + score').first().json.ambiguity_flags) }},\n  \"model\": \"gemini-2.5-flash\"\n}",
         "options": {}
       },
       "id": "a1000001-0000-4000-8000-000000000007",
@@ -146,9 +144,9 @@
       "main": [[{ "node": "Fetch message", "type": "main", "index": 0 }]]
     },
     "Fetch message": {
-      "main": [[{ "node": "Claude Haiku parse", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Gemini parse", "type": "main", "index": 0 }]]
     },
-    "Claude Haiku parse": {
+    "Gemini parse": {
       "main": [[{ "node": "Parse + score", "type": "main", "index": 0 }]]
     },
     "Parse + score": {
@@ -169,10 +167,10 @@
     "saveDataErrorExecution": "all",
     "saveDataSuccessExecution": "all"
   },
-  "versionId": "atlas-input-parser-v1",
+  "versionId": "atlas-input-parser-v2-gemini",
   "meta": {
     "templateId": "atlas",
-    "description": "NP-01 Input Parser. Webhook -> fetch message -> Claude Haiku parse -> score -> persist -> audit -> respond."
+    "description": "NP-01 Input Parser, Gemini 2.5 Flash. Webhook -> fetch message -> Gemini (schema-enforced) -> score -> persist -> audit -> respond."
   },
   "pinData": {}
 }
