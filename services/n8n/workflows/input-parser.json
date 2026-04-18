@@ -1,0 +1,178 @@
+{
+  "name": "atlas-input-parser",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "input-parser",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1000001-0000-4000-8000-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300],
+      "webhookId": "atlas-input-parser",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "atlas-webhook-secret",
+          "name": "Atlas Webhook Secret"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/input_messages",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "id", "value": "=eq.{{ $json.body.message_id }}" },
+            { "name": "select", "value": "*" }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{$env.SUPABASE_SERVICE_ROLE_KEY}}" },
+            { "name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1000001-0000-4000-8000-000000000002",
+      "name": "Fetch message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "x-api-key", "value": "={{$env.ANTHROPIC_API_KEY}}" },
+            { "name": "anthropic-version", "value": "2023-06-01" },
+            { "name": "content-type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-haiku-4-5-20251001\",\n  \"max_tokens\": 800,\n  \"system\": \"You are a payroll input parser. Extract structured fields from unstructured HR messages and return a single JSON object. Schema: { employee_name_guess: string, country_hint: string, change_type: 'bonus'|'address'|'salary'|'leave'|'tax_code'|'bank_change'|'other', amount: number|null, currency: string|null, effective_date: string|null, confidence_scores: { [field]: number 0-1 }, ambiguity_flags: string[] }. Return ONLY the JSON object — no prose, no markdown fences.\",\n  \"messages\": [{ \"role\": \"user\", \"content\": {{ JSON.stringify($json[0].raw_text) }} }]\n}",
+        "options": {}
+      },
+      "id": "a1000001-0000-4000-8000-000000000003",
+      "name": "Claude Haiku parse",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Claude's JSON output, compute overall confidence.\nconst msg = $input.first().json;\nconst prevNodes = $('Fetch message').all();\nconst messageRow = prevNodes[0].json;\nconst messageId = messageRow.id;\n\nconst rawText = msg.content?.[0]?.text ?? '';\n// Claude sometimes wraps in markdown — strip any ```json fences.\nconst match = rawText.match(/\\{[\\s\\S]*\\}/);\nif (!match) {\n  throw new Error('No JSON object in Claude output: ' + rawText.slice(0, 200));\n}\nconst parsed = JSON.parse(match[0]);\n\n// Overall confidence = min of per-field confidences, or 0.5 if none.\nconst scores = Object.values(parsed.confidence_scores ?? {});\nconst overall = scores.length\n  ? Math.min(...scores.map((n) => Number(n) || 0))\n  : 0.5;\n\nreturn [{\n  json: {\n    message_id: messageId,\n    parsed_fields: parsed,\n    ambiguity_flags: parsed.ambiguity_flags ?? [],\n    confidence_overall: Number(overall.toFixed(2)),\n    raw_text: messageRow.raw_text,\n  },\n}];"
+      },
+      "id": "a1000001-0000-4000-8000-000000000004",
+      "name": "Parse + score",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [940, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/input_parse_results",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{$env.SUPABASE_SERVICE_ROLE_KEY}}" },
+            { "name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}" },
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Prefer", "value": "return=representation" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message_id\": \"{{ $json.message_id }}\",\n  \"parsed_fields\": {{ JSON.stringify($json.parsed_fields) }},\n  \"ambiguity_flags\": {{ JSON.stringify($json.ambiguity_flags) }},\n  \"confidence_overall\": {{ $json.confidence_overall }},\n  \"status\": \"awaiting_approval\"\n}",
+        "options": {}
+      },
+      "id": "a1000001-0000-4000-8000-000000000005",
+      "name": "Insert parse_result",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1180, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/audit_log",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{$env.SUPABASE_SERVICE_ROLE_KEY}}" },
+            { "name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"organization_id\": \"{{ $('Fetch message').first().json.organization_id }}\",\n  \"actor_type\": \"system\",\n  \"action\": \"input_parsed\",\n  \"target_type\": \"input_message\",\n  \"target_id\": \"{{ $('Parse + score').first().json.message_id }}\",\n  \"metadata\": { \"confidence\": {{ $('Parse + score').first().json.confidence_overall }}, \"source\": \"input-parser-workflow\" }\n}",
+        "options": {}
+      },
+      "id": "a1000001-0000-4000-8000-000000000006",
+      "name": "Audit log",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1420, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"parse_result_id\": \"{{ $('Insert parse_result').first().json[0].id }}\",\n  \"confidence\": {{ $('Parse + score').first().json.confidence_overall }},\n  \"ambiguity_flags\": {{ JSON.stringify($('Parse + score').first().json.ambiguity_flags) }}\n}",
+        "options": {}
+      },
+      "id": "a1000001-0000-4000-8000-000000000007",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1660, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Fetch message", "type": "main", "index": 0 }]]
+    },
+    "Fetch message": {
+      "main": [[{ "node": "Claude Haiku parse", "type": "main", "index": 0 }]]
+    },
+    "Claude Haiku parse": {
+      "main": [[{ "node": "Parse + score", "type": "main", "index": 0 }]]
+    },
+    "Parse + score": {
+      "main": [[{ "node": "Insert parse_result", "type": "main", "index": 0 }]]
+    },
+    "Insert parse_result": {
+      "main": [[{ "node": "Audit log", "type": "main", "index": 0 }]]
+    },
+    "Audit log": {
+      "main": [[{ "node": "Respond", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all"
+  },
+  "versionId": "atlas-input-parser-v1",
+  "meta": {
+    "templateId": "atlas",
+    "description": "NP-01 Input Parser. Webhook -> fetch message -> Claude Haiku parse -> score -> persist -> audit -> respond."
+  },
+  "pinData": {}
+}
