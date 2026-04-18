@@ -1,26 +1,253 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
+/* ──────────────────────────────────────────────────────────
+   Atlas design tokens — editorial dashboard
+   Warm cream default · Dark ops mode
+   ────────────────────────────────────────────────────────── */
 @theme inline {
+  /* shadcn surface system (maps to our warm palette) */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Atlas brand + status */
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-status-ok: var(--status-ok);
+  --color-status-warn: var(--status-warn);
+  --color-status-crit: var(--status-crit);
+  --color-ink-primary: var(--foreground);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-ink-tertiary: var(--ink-tertiary);
+  --color-rule: var(--rule);
+
+  /* chart palette — editorial, muted warm tones */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Fonts */
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-display: var(--font-fraunces);
+  --font-heading: var(--font-fraunces);
+
+  /* Radius — tight, editorial */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ──────────────────────────────────────────────────────────
+   Light (default brand mode) — warm cream
+   ────────────────────────────────────────────────────────── */
+:root {
+  /* page surfaces */
+  --background: #F1EBDB;
+  --foreground: #1A1917;
+  --card: #FAF5E7;
+  --card-foreground: #1A1917;
+  --popover: #FAF5E7;
+  --popover-foreground: #1A1917;
+
+  /* interactive */
+  --primary: #1A1917;
+  --primary-foreground: #FAF5E7;
+  --secondary: #E8E1CC;
+  --secondary-foreground: #1A1917;
+  --muted: #E8E1CC;
+  --muted-foreground: #4A4740;
+  --accent: #E8E1CC;
+  --accent-foreground: #1A1917;
+  --destructive: #A33624;
+
+  /* borders & focus */
+  --border: #D9D2BE;
+  --input: #D9D2BE;
+  --ring: #C24A1F;
+
+  /* sidebar */
+  --sidebar: #EDE6D2;
+  --sidebar-foreground: #1A1917;
+  --sidebar-primary: #C24A1F;
+  --sidebar-primary-foreground: #FAF5E7;
+  --sidebar-accent: #E8E1CC;
+  --sidebar-accent-foreground: #1A1917;
+  --sidebar-border: #D9D2BE;
+  --sidebar-ring: #C24A1F;
+
+  /* Atlas extensions */
+  --brand: #C24A1F;          /* burnt sienna */
+  --brand-hover: #A03A12;
+  --status-ok: #3D6B3D;      /* muted forest */
+  --status-warn: #B8791F;    /* aged mustard */
+  --status-crit: #A33624;    /* rust red */
+  --ink-secondary: #4A4740;
+  --ink-tertiary: #8C887D;
+  --rule: #D9D2BE;
+
+  /* chart palette (Atlassian discipline — 5 muted warm tones) */
+  --chart-1: #C24A1F;        /* accent sienna */
+  --chart-2: #4A7A7A;        /* muted teal */
+  --chart-3: #9B8043;        /* aged brass */
+  --chart-4: #6B5574;        /* dusty plum */
+  --chart-5: #556270;        /* slate */
+
+  --radius: 0.25rem;
+}
+
+/* ──────────────────────────────────────────────────────────
+   Dark (ops mode) — warm near-black
+   ────────────────────────────────────────────────────────── */
+.dark {
+  --background: #0E0E0C;
+  --foreground: #F1EBDB;
+  --card: #1A1A17;
+  --card-foreground: #F1EBDB;
+  --popover: #1A1A17;
+  --popover-foreground: #F1EBDB;
+
+  --primary: #F1EBDB;
+  --primary-foreground: #1A1917;
+  --secondary: #242420;
+  --secondary-foreground: #F1EBDB;
+  --muted: #242420;
+  --muted-foreground: #B5AE9A;
+  --accent: #242420;
+  --accent-foreground: #F1EBDB;
+  --destructive: #D85A42;
+
+  --border: #2E2D28;
+  --input: #2E2D28;
+  --ring: #E87142;
+
+  --sidebar: #141411;
+  --sidebar-foreground: #F1EBDB;
+  --sidebar-primary: #E87142;
+  --sidebar-primary-foreground: #0E0E0C;
+  --sidebar-accent: #242420;
+  --sidebar-accent-foreground: #F1EBDB;
+  --sidebar-border: #2E2D28;
+  --sidebar-ring: #E87142;
+
+  --brand: #E87142;
+  --brand-hover: #C5561F;
+  --status-ok: #6FA86F;
+  --status-warn: #D99B3A;
+  --status-crit: #D85A42;
+  --ink-secondary: #B5AE9A;
+  --ink-tertiary: #7A7566;
+  --rule: #2E2D28;
+
+  --chart-1: #E87142;
+  --chart-2: #6CABAB;
+  --chart-3: #C4A05A;
+  --chart-4: #8F7499;
+  --chart-5: #7685A0;
+}
+
+/* ──────────────────────────────────────────────────────────
+   Base layer
+   ────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  /* Tabular numerals for any element that displays numbers */
+  .tabular,
+  code,
+  pre,
+  .font-mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ──────────────────────────────────────────────────────────
+   Utility classes
+   ────────────────────────────────────────────────────────── */
+@layer utilities {
+  /* Optikka-style micro-caps eyebrow */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.4;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-tertiary);
+  }
+
+  /* Hairline divider */
+  .hairline {
+    border-color: var(--rule);
+  }
+
+  /* Display serif */
+  .font-display {
+    font-family: var(--font-display);
+    font-feature-settings: "ss01";
+  }
+
+  /* Editorial page title */
+  .display-xl {
+    font-family: var(--font-display);
+    font-size: 48px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+  }
+  .display-lg {
+    font-family: var(--font-display);
+    font-size: 36px;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+  }
+
+  /* Editorial grid corner rule (Optikka) */
+  .corner-grid {
+    background-image:
+      linear-gradient(to right, var(--rule) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--rule) 1px, transparent 1px);
+    background-size: 120px 120px;
+  }
 }
