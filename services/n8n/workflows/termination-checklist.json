@@ -105,7 +105,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Attach termination_id to each checklist item for bulk insert.\nconst termRow = $input.first().json[0];\nconst structured = $('Structure checklist').first().json;\nconst items = structured.checklist_items.map((item) => ({\n  ...item,\n  termination_id: termRow.id,\n}));\nreturn [{ json: { termination: termRow, items, urgent: structured.urgent, hours_to_cutoff: structured.hours_to_cutoff, organization_id: structured.organization_id } }];"
+        "jsCode": "// Attach termination_id to each checklist item for bulk insert.\nconst rawInput = $input.first().json;\nconst termRow = Array.isArray(rawInput) ? rawInput[0] : rawInput;\nconst structured = $('Structure checklist').first().json;\nconst items = structured.checklist_items.map((item) => ({\n  ...item,\n  termination_id: termRow.id,\n}));\nreturn [{ json: { termination: termRow, items, urgent: structured.urgent, hours_to_cutoff: structured.hours_to_cutoff, organization_id: structured.organization_id } }];"
       },
       "id": "b1000001-0000-4000-8000-000000000006",
       "name": "Attach termination_id",
