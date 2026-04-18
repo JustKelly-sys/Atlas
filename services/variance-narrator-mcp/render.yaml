@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: atlas-variance-narrator
+    runtime: docker
+    region: frankfurt
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /health
+    dockerfilePath: ./services/variance-narrator-mcp/Dockerfile
+    dockerContext: ./services/variance-narrator-mcp
+    envVars:
+      - key: SUPABASE_URL
+        value: https://lyvtxizoenxigezrqibz.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: PYTHON_SERVICE_SECRET
+        sync: false
