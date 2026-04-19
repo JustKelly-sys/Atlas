@@ -139,7 +139,7 @@ export function CountryGrid({
                     className="mono"
                     style={{ fontSize: 10.5, color: "var(--ink-tertiary)", letterSpacing: "0.1em", marginTop: 2 }}
                   >
-                    {country.iso_code} · {country.currency}
+                    {country.flag_emoji ?? country.iso_code} · {country.currency}
                   </div>
                 </div>
                 {cycle && (

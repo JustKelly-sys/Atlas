@@ -40,7 +40,6 @@ export default function SignInPage() {
         <video
           autoPlay
           muted
-          loop
           playsInline
           style={{
             width: "100%",
@@ -50,12 +49,12 @@ export default function SignInPage() {
         >
           <source src="/atlas-entrance.mp4" type="video/mp4" />
         </video>
-        {/* Cream scrim — keeps form readable, ties video to palette */}
+        {/* Cream vignette — clear centre, cream edges */}
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background: "rgba(241, 235, 219, 0.52)",
+            background: "radial-gradient(ellipse 35% 40% at 50% 50%, transparent 0%, rgba(241,235,219,0.75) 45%, rgba(241,235,219,0.97) 70%, rgba(241,235,219,1) 100%)",
           }}
         />
       </div>

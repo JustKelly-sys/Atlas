@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient as createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { StatusTag } from "@/components/shell/StatusTag";
 import { formatCompactCurrency, formatDate } from "@/lib/formatters";

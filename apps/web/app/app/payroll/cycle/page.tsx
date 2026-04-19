@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient as createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { CycleGantt } from "@/components/payroll/CycleGantt";
 import { formatCountdown, formatDate, formatCompactCurrency } from "@/lib/formatters";

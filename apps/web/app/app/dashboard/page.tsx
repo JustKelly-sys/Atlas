@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient as createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { CycleStatusCard } from "@/components/dashboard/CycleStatusCard";
 import { CriticalAlertsCard } from "@/components/dashboard/CriticalAlertsCard";

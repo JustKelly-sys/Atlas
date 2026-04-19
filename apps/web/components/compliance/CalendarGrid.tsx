@@ -85,7 +85,7 @@ export function CalendarGrid({
                     </span>
                     <span className="text-sm">{country.name}</span>
                     <span className="font-mono text-[10px] text-[color:var(--ink-tertiary)]">
-                      {country.iso_code}
+                      {country.flag_emoji ?? country.iso_code}
                     </span>
                   </div>
                 </td>

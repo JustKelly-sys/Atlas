@@ -192,7 +192,7 @@ export function CycleStatusCard({ cycles }: { cycles: Cycle[] }) {
                   className="mono"
                   style={{ fontSize: 10, color: "var(--ink-tertiary)", marginLeft: 4, letterSpacing: "0.08em" }}
                 >
-                  {c.countries.iso_code}
+                  {c.countries.currency}
                 </span>
               </span>
               <span className="mono tnum" style={{ fontSize: 12, color: "var(--ink-secondary)" }}>
