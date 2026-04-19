@@ -25,7 +25,7 @@ export function KpiStrip({ kpis }: { kpis: Kpi[] }) {
       >
         <span className="eyebrow">CYCLE METRICS · APR 2026</span>
         <span className="mono" style={{ fontSize: 10.5, color: "var(--ink-tertiary)" }}>
-          VS LAST CYCLE
+          VS LAST CYCLE · EST.
         </span>
       </div>
 

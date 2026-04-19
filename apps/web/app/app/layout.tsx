@@ -14,7 +14,7 @@ export default async function AppShellLayout({
 
   return (
     <div className="min-h-screen flex bg-background">
-      <Sidebar />
+      <Sidebar userName={decodeURIComponent(name)} />
       <div className="flex-1 flex flex-col min-w-0">
         <Header userName={decodeURIComponent(name)} />
         <main className="flex-1 p-8 max-w-[1440px] mx-auto w-full">

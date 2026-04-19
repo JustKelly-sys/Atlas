@@ -195,25 +195,36 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-10">
+    <div>
+      {/* Hero block — greeting + primary ops status */}
       <PageHeader
         eyebrow="Operations · April 2026"
         title={`Good morning, ${firstName}.`}
         subtitle={`${currentCycles.length} ${currentCycles.length === 1 ? "country" : "countries"} open for input. Nearest cutoff in under 72 hours.`}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 mt-8">
         <CycleStatusCard cycles={currentCycles} />
         <CriticalAlertsCard alerts={alerts} />
       </div>
 
-      <FiveStrip cards={fiveCards} />
+      {/* Automation strip — tighter to the ops block above */}
+      <div className="mt-8">
+        <FiveStrip cards={fiveCards} />
+      </div>
 
-      <KpiStrip kpis={kpis} />
+      {/* KPI strip — secondary, wider gap signals new section */}
+      <div className="mt-14">
+        <KpiStrip kpis={kpis} />
+      </div>
 
-      <CountryGrid countries={countries} currentCycles={currentCycles} />
+      {/* Country overview */}
+      <div className="mt-10">
+        <CountryGrid countries={countries} currentCycles={currentCycles} />
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Activity + filings — widest gap, bottom of page */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-14">
         <ActivityFeed events={audit} />
         <UpcomingFilings filings={filings} />
       </div>

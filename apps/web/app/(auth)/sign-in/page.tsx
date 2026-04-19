@@ -27,55 +27,109 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="space-y-10">
-      <div className="space-y-3">
-        <p className="eyebrow">Atlas · Operations</p>
-        <h1 className="serif" style={{ fontSize: 42, fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.1 }}>
-          What should we call you?
-        </h1>
-      </div>
-
-      <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="First name"
-          autoFocus
-          autoComplete="given-name"
+    <>
+      {/* Full-viewport video background */}
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 0,
+          overflow: "hidden",
+        }}
+      >
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
           style={{
-            height: 48,
             width: "100%",
-            border: "1px solid var(--rule)",
-            background: "var(--surface-2)",
-            padding: "0 16px",
-            fontSize: 15,
-            color: "var(--foreground)",
-            outline: "none",
-            fontFamily: "var(--font-geist-sans)",
-          }}
-          onFocus={(e) => (e.target.style.borderColor = "var(--brand)")}
-          onBlur={(e) => (e.target.style.borderColor = "var(--rule)")}
-        />
-        <button
-          type="submit"
-          disabled={!name.trim() || loading}
-          style={{
-            height: 48,
-            background: "var(--brand)",
-            color: "#fff",
-            border: "none",
-            fontSize: 13,
-            fontFamily: "var(--font-jetbrains-mono)",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            cursor: name.trim() && !loading ? "pointer" : "not-allowed",
-            opacity: name.trim() && !loading ? 1 : 0.4,
+            height: "100%",
+            objectFit: "cover",
           }}
         >
-          {loading ? "Entering…" : "Enter Atlas →"}
-        </button>
-      </form>
-    </div>
+          <source src="/atlas-entrance.mp4" type="video/mp4" />
+        </video>
+        {/* Cream scrim — keeps form readable, ties video to palette */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "rgba(241, 235, 219, 0.52)",
+          }}
+        />
+      </div>
+
+      {/* Form — sits above video */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: 28,
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <p className="eyebrow">Atlas · Operations</p>
+          <h1
+            className="serif"
+            style={{
+              fontSize: 42,
+              fontWeight: 400,
+              letterSpacing: "-0.02em",
+              lineHeight: 1.1,
+              color: "var(--foreground)",
+            }}
+          >
+            What should we call you?
+          </h1>
+        </div>
+
+        <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="First name"
+            autoFocus
+            autoComplete="given-name"
+            style={{
+              height: 48,
+              width: "100%",
+              border: "1px solid var(--rule)",
+              background: "rgba(250, 245, 231, 0.8)",
+              padding: "0 16px",
+              fontSize: 15,
+              color: "var(--foreground)",
+              outline: "none",
+              fontFamily: "var(--font-geist-sans)",
+              backdropFilter: "blur(4px)",
+            }}
+            onFocus={(e) => (e.target.style.borderColor = "var(--brand)")}
+            onBlur={(e) => (e.target.style.borderColor = "var(--rule)")}
+          />
+          <button
+            type="submit"
+            disabled={!name.trim() || loading}
+            style={{
+              height: 48,
+              background: "var(--brand)",
+              color: "#fff",
+              border: "none",
+              fontSize: 13,
+              fontFamily: "var(--font-jetbrains-mono)",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              cursor: name.trim() && !loading ? "pointer" : "not-allowed",
+              opacity: name.trim() && !loading ? 1 : 0.4,
+              transition: "opacity 150ms",
+            }}
+          >
+            {loading ? "Entering…" : "Enter Atlas →"}
+          </button>
+        </form>
+      </div>
+    </>
   );
 }

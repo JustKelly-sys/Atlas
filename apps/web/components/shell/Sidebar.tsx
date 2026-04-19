@@ -53,7 +53,7 @@ function TagPill({ tag }: { tag: string }) {
     tag === "Prototype" ? "pill-proto" :
     "pill-road";
   return (
-    <span className={`pill ${cls}`} style={{ padding: "0 5px", fontSize: 9.5, letterSpacing: "0.1em" }}>
+    <span className={`pill ${cls}`} style={{ padding: "1px 7px", fontSize: 11, letterSpacing: "0.08em" }}>
       {tag === "Live" && <span className="dot" />}
       {tag}
     </span>
@@ -80,17 +80,18 @@ function NavRow({
         display: "flex",
         alignItems: "center",
         gap: 8,
-        padding: indent ? "5px 10px 5px 18px" : "6px 10px",
+        padding: indent ? "5px 10px 5px 16px" : "6px 10px 6px 8px",
         fontFamily: "var(--font-sans)",
         fontSize: 13,
         background: active ? "var(--surface-2)" : "transparent",
         color: active ? "var(--foreground)" : "var(--ink-secondary)",
         borderRadius: 2,
+        borderLeft: active ? "2px solid var(--brand)" : "2px solid transparent",
         cursor: "pointer",
         fontWeight: active ? 500 : 400,
         marginBottom: 1,
         textDecoration: "none",
-        transition: "background 120ms",
+        transition: "background 120ms, border-color 120ms",
       }}
       className="row-hover"
     >
@@ -103,7 +104,8 @@ function NavRow({
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ userName = "Atlas User" }: { userName?: string }) {
+  const initials = userName.slice(0, 2).toUpperCase();
   const pathname = usePathname();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({
     Payroll: true,
@@ -246,11 +248,11 @@ export function Sidebar() {
             flexShrink: 0,
           }}
         >
-          TJ
+          {initials}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 500, color: "var(--foreground)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-            Tshepiso Jafta
+            {userName}
           </div>
           <div className="mono" style={{ fontSize: 10, color: "var(--ink-tertiary)", letterSpacing: "0.08em" }}>
             DEMO ORG

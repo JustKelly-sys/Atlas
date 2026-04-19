@@ -97,10 +97,10 @@ export default function LandingPage() {
         <h1 className="serif" style={{ fontSize: "clamp(64px, 10vw, 96px)", fontWeight: 400, letterSpacing: "-0.03em", lineHeight: 1, marginBottom: 32 }}>
           Atlas.
         </h1>
-        <p className="serif" style={{ fontSize: 26, fontWeight: 400, fontStyle: "italic", maxWidth: 680, lineHeight: 1.5, color: "var(--ink-secondary)", marginBottom: 80 }}>
-          A payroll operations suite for the senior operator who has seen every generic SaaS dashboard already — and is done with them.
+        <p className="serif" style={{ fontSize: 26, fontWeight: 400, fontStyle: "italic", maxWidth: 680, lineHeight: 1.5, color: "var(--ink-secondary)", marginBottom: 20 }}>
+          A payroll operations suite.
         </p>
-        <p className="mono" style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-tertiary)", marginBottom: 48 }}>
+        <p className="mono" style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-tertiary)", marginBottom: 64 }}>
           Built in a weekend. Five automations. Six deployed services. One editorial suite.
         </p>
         <div style={{ display: "flex", gap: 16 }}>

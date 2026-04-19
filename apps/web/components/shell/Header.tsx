@@ -33,8 +33,7 @@ export function Header({ userName }: { userName: string }) {
       style={{
         height: "var(--shell-header, 56px)",
         borderBottom: "1px solid var(--rule)",
-        background: "color-mix(in oklch, var(--card) 85%, transparent)",
-        backdropFilter: "blur(8px)",
+        background: "var(--card)",
         display: "flex",
         alignItems: "center",
         padding: "0 28px",
@@ -51,29 +50,6 @@ export function Header({ userName }: { userName: string }) {
       <div style={{ flex: 1 }} />
 
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        {/* Search hint */}
-        <div
-          className="mono"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "5px 10px",
-            border: "1px solid var(--rule)",
-            borderRadius: 2,
-            background: "var(--surface-2, var(--muted))",
-            width: 280,
-            fontSize: 12,
-            color: "var(--ink-tertiary)",
-          }}
-        >
-          <span>⌕</span>
-          <span style={{ fontSize: 11 }}>Jump to cycle, country, filing…</span>
-          <span style={{ marginLeft: "auto", border: "1px solid var(--rule)", padding: "0 4px", borderRadius: 2, fontSize: 10 }}>
-            ⌘K
-          </span>
-        </div>
-
         {/* Theme toggle */}
         <ThemeToggle />
 
