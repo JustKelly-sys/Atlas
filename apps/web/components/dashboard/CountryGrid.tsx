@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CountryFlag } from "@/components/ui/CountryFlag";
 
 type Country = {
   id: string;
@@ -125,9 +126,7 @@ export function CountryGrid({
                   gap: 14,
                 }}
               >
-                <span className="flag" style={{ fontSize: 22, lineHeight: 1 }}>
-                  {country.flag_emoji}
-                </span>
+                <CountryFlag isoCode={country.iso_code} size={24} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div
                     className="serif"

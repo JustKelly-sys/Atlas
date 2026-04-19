@@ -4,6 +4,7 @@ import { Fragment, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, ChevronDown, ChevronRight, Flag } from "lucide-react";
+import { CountryFlag } from "@/components/ui/CountryFlag";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { toast } from "sonner";
@@ -125,9 +126,9 @@ export function VarianceTable({
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-base">
-                        {r.countries?.flag_emoji}
-                      </span>
+                      {r.countries?.iso_code && (
+                        <CountryFlag isoCode={r.countries.iso_code} size={16} />
+                      )}
                       <span className="text-sm">
                         {r.countries?.name ?? "—"}
                       </span>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CountryFlag } from "@/components/ui/CountryFlag";
 
 type Cycle = {
   id: string;
@@ -185,7 +186,7 @@ export function CycleStatusCard({ cycles }: { cycles: Cycle[] }) {
                 borderBottom: i < cycles.length - 1 ? "1px solid var(--rule-soft)" : "none",
               }}
             >
-              <span className="flag" style={{ fontSize: 14 }}>{c.countries.flag_emoji}</span>
+              <CountryFlag isoCode={c.countries.iso_code} size={16} />
               <span style={{ fontSize: 13, color: "var(--foreground)", fontWeight: 500 }}>
                 {c.countries.name}
                 <span
