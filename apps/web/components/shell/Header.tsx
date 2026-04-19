@@ -1,8 +1,6 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { toast } from "sonner";
 import { ThemeToggle } from "./ThemeToggle";
 
 function prettify(seg: string) {
@@ -25,11 +23,8 @@ export function Header({ userName }: { userName: string }) {
   const initials = userName.slice(0, 2).toUpperCase();
 
   async function signOut() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    toast.success("Signed out");
+    await fetch("/api/auth/exit", { method: "POST" });
     router.push("/sign-in");
-    router.refresh();
   }
 
   return (
