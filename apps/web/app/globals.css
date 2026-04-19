@@ -124,6 +124,14 @@
   --chart-5: #556270;        /* slate */
 
   --radius: 0.25rem;
+
+  /* Atlas canvas extras */
+  --surface-2: #F6F0DF;
+  --rule-soft: #E5DEC9;
+  --brand-soft: color-mix(in oklch, #C24A1F 12%, transparent);
+  --brand-strong: #A03A12;
+  --shell-sidebar: 240px;
+  --shell-header: 56px;
 }
 
 /* ──────────────────────────────────────────────────────────
@@ -174,6 +182,12 @@
   --chart-3: #C4A05A;
   --chart-4: #8F7499;
   --chart-5: #7685A0;
+
+  /* Atlas canvas extras */
+  --surface-2: #15140F;
+  --rule-soft: #1F1E19;
+  --brand-soft: color-mix(in oklch, #E87142 14%, transparent);
+  --brand-strong: #F38558;
 }
 
 /* ──────────────────────────────────────────────────────────
@@ -209,11 +223,12 @@
   /* Optikka-style micro-caps eyebrow */
   .eyebrow {
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 10.5px;
     line-height: 1.4;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--ink-tertiary);
+    font-weight: 500;
   }
 
   /* Hairline divider */
@@ -250,4 +265,88 @@
       linear-gradient(to bottom, var(--rule) 1px, transparent 1px);
     background-size: 120px 120px;
   }
+
+  /* ── Atlas design system utilities (from claude.ai/design output) ── */
+
+  /* Mono / serif / tabular helpers */
+  .mono { font-family: var(--font-mono); font-feature-settings: "tnum","zero"; }
+  .serif { font-family: var(--font-display); font-feature-settings: "ss01","calt"; letter-spacing: -0.005em; }
+  .tnum { font-variant-numeric: tabular-nums; }
+
+  /* Flag / emoji — force colour emoji rendering */
+  .flag, .emoji {
+    font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  /* Pill badge system */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 1px solid var(--rule);
+    color: var(--ink-secondary);
+    background: transparent;
+    white-space: nowrap;
+    line-height: 1.4;
+  }
+  .pill .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+  .pill-live  { color: var(--status-ok);   border-color: color-mix(in oklch, var(--status-ok)   40%, var(--rule)); }
+  .pill-ok    { color: var(--status-ok);   border-color: color-mix(in oklch, var(--status-ok)   35%, var(--rule)); }
+  .pill-warn  { color: var(--status-warn); border-color: color-mix(in oklch, var(--status-warn) 45%, var(--rule)); background: color-mix(in oklch, var(--status-warn)  8%, transparent); }
+  .pill-crit  { color: var(--status-crit); border-color: color-mix(in oklch, var(--status-crit) 50%, var(--rule)); background: color-mix(in oklch, var(--status-crit)  8%, transparent); }
+  .pill-accent{ color: var(--brand);       border-color: color-mix(in oklch, var(--brand)       45%, var(--rule)); }
+  .pill-proto { color: var(--ink-tertiary); }
+  .pill-road  { color: var(--ink-tertiary); opacity: 0.7; }
+  .pill-neutral { color: var(--ink-secondary); }
+
+  /* Corner-rule marks (Optikka / Atlas greeting block) */
+  .corners { position: relative; }
+  .corners::before,
+  .corners::after,
+  .corners > .cmark-tr,
+  .corners > .cmark-bl {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+  }
+  .corners::before  { top: 0;    left:  0; border-top:    1px solid var(--rule); border-left:   1px solid var(--rule); }
+  .corners::after   { bottom: 0; right: 0; border-bottom: 1px solid var(--rule); border-right:  1px solid var(--rule); }
+  .corners > .cmark-tr { top: 0;    right: 0; border-top:    1px solid var(--rule); border-right:  1px solid var(--rule); }
+  .corners > .cmark-bl { bottom: 0; left:  0; border-bottom: 1px solid var(--rule); border-left:   1px solid var(--rule); }
+
+  /* Progress track */
+  .track {
+    position: relative;
+    height: 4px;
+    background: color-mix(in oklch, var(--foreground) 8%, transparent);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .track > .fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    background: color-mix(in oklch, var(--brand) 35%, transparent);
+    border-radius: 1px;
+  }
+  .track > .fill.strong { background: var(--brand); }
+
+  /* Hover row */
+  .row-hover { transition: background 120ms; }
+  .row-hover:hover { background: var(--surface-2); cursor: pointer; }
 }

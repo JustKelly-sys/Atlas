@@ -1,44 +1,28 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { Search, LogOut } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ThemeToggle } from "./ThemeToggle";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import { ThemeToggle } from "./ThemeToggle";
 
-function prettifySegment(seg: string) {
-  return seg
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+function prettify(seg: string) {
+  return seg.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-export function Header({ userEmail }: { userEmail: string }) {
+export function Header({ userName }: { userName: string }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Breadcrumb: skip "app" prefix, prettify segments
   const parts = pathname
     .split("/")
     .filter(Boolean)
-    .filter((p) => p !== "app")
-    .map(prettifySegment);
+    .filter((p) => p !== "app");
 
-  const initials = userEmail
-    .split("@")[0]
-    .split(/[.\-_]/)
-    .map((s) => s[0]?.toUpperCase() ?? "")
-    .join("")
-    .slice(0, 2);
+  const breadcrumb = parts.length
+    ? `OPERATIONS › ${parts.map((p) => p.toUpperCase().replace(/-/g, " ")).join(" › ")}`
+    : "OPERATIONS › DASHBOARD";
+
+  const initials = userName.slice(0, 2).toUpperCase();
 
   async function signOut() {
     const supabase = createClient();
@@ -49,76 +33,79 @@ export function Header({ userEmail }: { userEmail: string }) {
   }
 
   return (
-    <header className="h-14 border-b border-[color:var(--rule)] flex items-center px-6 gap-4 bg-background/80 backdrop-blur-sm sticky top-0 z-30">
+    <div
+      className="header"
+      style={{
+        height: "var(--shell-header, 56px)",
+        borderBottom: "1px solid var(--rule)",
+        background: "color-mix(in oklch, var(--card) 85%, transparent)",
+        backdropFilter: "blur(8px)",
+        display: "flex",
+        alignItems: "center",
+        padding: "0 28px",
+        position: "sticky",
+        top: 0,
+        zIndex: 10,
+      }}
+    >
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm min-w-0">
-        {parts.length === 0 ? (
-          <span className="font-display italic text-[color:var(--ink-tertiary)]">
-            Home
-          </span>
-        ) : (
-          parts.map((p, i) => (
-            <span key={`${p}-${i}`} className="flex items-center gap-2 min-w-0">
-              {i > 0 ? (
-                <span className="text-[color:var(--ink-tertiary)] text-xs">
-                  /
-                </span>
-              ) : null}
-              <span
-                className={
-                  i === parts.length - 1
-                    ? "font-display italic text-[color:var(--ink-primary)] truncate"
-                    : "text-[color:var(--ink-tertiary)] truncate"
-                }
-              >
-                {p}
-              </span>
-            </span>
-          ))
-        )}
-      </nav>
-
-      {/* Right side */}
-      <div className="ml-auto flex items-center gap-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-[color:var(--ink-tertiary)] hover:text-[color:var(--ink-primary)] h-8 gap-2"
-          aria-label="Search"
-          disabled
-        >
-          <Search className="h-4 w-4" />
-          <span className="font-mono text-xs">⌘K</span>
-        </Button>
-        <ThemeToggle />
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            className="inline-flex items-center justify-center h-8 w-8 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label="Account menu"
-          >
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-[color:var(--brand)] text-[color:var(--primary-foreground)] text-xs">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">Signed in</p>
-                <p className="text-xs leading-none text-muted-foreground font-mono">
-                  {userEmail}
-                </p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={signOut}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Sign out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="mono" style={{ fontSize: 11, color: "var(--ink-tertiary)", letterSpacing: "0.12em" }}>
+        {breadcrumb}
       </div>
-    </header>
+
+      <div style={{ flex: 1 }} />
+
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        {/* Search hint */}
+        <div
+          className="mono"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "5px 10px",
+            border: "1px solid var(--rule)",
+            borderRadius: 2,
+            background: "var(--surface-2, var(--muted))",
+            width: 280,
+            fontSize: 12,
+            color: "var(--ink-tertiary)",
+          }}
+        >
+          <span>⌕</span>
+          <span style={{ fontSize: 11 }}>Jump to cycle, country, filing…</span>
+          <span style={{ marginLeft: "auto", border: "1px solid var(--rule)", padding: "0 4px", borderRadius: 2, fontSize: 10 }}>
+            ⌘K
+          </span>
+        </div>
+
+        {/* Theme toggle */}
+        <ThemeToggle />
+
+        {/* Avatar / sign out */}
+        <button
+          onClick={signOut}
+          title={`Sign out (${userName})`}
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: 2,
+            background: "var(--brand)",
+            color: "#FAF5E7",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontFamily: "var(--font-mono)",
+            fontSize: 11,
+            fontWeight: 600,
+            border: "none",
+            cursor: "pointer",
+            marginLeft: 4,
+          }}
+        >
+          {initials}
+        </button>
+      </div>
+    </div>
   );
 }

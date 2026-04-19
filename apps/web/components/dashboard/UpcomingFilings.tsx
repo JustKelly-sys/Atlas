@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatDate, daysUntil } from "@/lib/formatters";
+import { daysUntil } from "@/lib/formatters";
 
 type Filing = {
   id: string;
@@ -9,66 +9,106 @@ type Filing = {
   countries: { iso_code: string; name: string; flag_emoji: string | null } | null;
 };
 
-function urgencyStyle(days: number | null) {
-  if (days === null) return { label: "—", color: "var(--ink-tertiary)" };
-  if (days < 0) return { label: "overdue", color: "var(--status-crit)" };
-  if (days <= 3) return { label: `in ${days}d`, color: "var(--status-crit)" };
-  if (days <= 14) return { label: `in ${days}d`, color: "var(--status-warn)" };
-  return { label: `in ${days}d`, color: "var(--ink-secondary)" };
+function urgencyColor(days: number | null): string {
+  if (days === null) return "var(--ink-tertiary)";
+  if (days < 0) return "var(--status-crit)";
+  if (days <= 7) return "var(--brand)";
+  if (days <= 21) return "var(--status-warn)";
+  return "var(--ink-tertiary)";
+}
+
+function dueLabel(days: number | null): string {
+  if (days === null) return "—";
+  if (days < 0) return `${Math.abs(days)}d overdue`;
+  if (days === 0) return "today";
+  return `in ${days}d`;
+}
+
+function humanStatus(s: string) {
+  return s.replace(/_/g, " ");
 }
 
 export function UpcomingFilings({ filings }: { filings: Filing[] }) {
   return (
-    <section className="rounded-sm border border-[color:var(--rule)] bg-card p-6 space-y-4 h-full flex flex-col">
-      <header className="flex items-center justify-between">
-        <p className="eyebrow">Upcoming filings</p>
-        <span className="font-mono text-[10px] text-muted-foreground tabular-nums">
-          {filings.length} open
+    <div
+      style={{
+        border: "1px solid var(--rule)",
+        background: "var(--card)",
+        padding: 22,
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 10,
+        }}
+      >
+        <span className="eyebrow">UPCOMING FILINGS</span>
+        <span className="mono" style={{ fontSize: 10, color: "var(--ink-tertiary)", letterSpacing: "0.08em" }}>
+          NEXT {Math.min(filings.length, 6)}
         </span>
-      </header>
+      </div>
 
       {filings.length === 0 ? (
-        <p className="text-sm text-muted-foreground flex-1 flex items-center">
+        <div
+          className="serif"
+          style={{ fontSize: 16, color: "var(--ink-secondary)", flex: 1, display: "flex", alignItems: "center" }}
+        >
           No filings in the next window.
-        </p>
+        </div>
       ) : (
-        <ul className="divide-y divide-[color:var(--rule)] flex-1">
+        <div style={{ flex: 1 }}>
           {filings.slice(0, 6).map((f) => {
             const days = daysUntil(f.due_date);
-            const u = urgencyStyle(days);
+            const color = urgencyColor(days);
             return (
-              <li key={f.id} className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
-                <div className="flex items-center gap-3 min-w-0">
-                  <span className="text-lg leading-none shrink-0">
-                    {f.countries?.flag_emoji}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-sm leading-tight font-mono">
-                      {f.form_code}
-                    </p>
-                    <p className="text-[11px] text-[color:var(--ink-tertiary)] tabular-nums">
-                      {formatDate(f.due_date, "long")} · {f.status.replace(/_/g, " ")}
-                    </p>
-                  </div>
-                </div>
-                <span
-                  className="font-mono text-xs tabular-nums shrink-0"
-                  style={{ color: u.color }}
-                >
-                  {u.label}
+              <div
+                key={f.id}
+                className="row-hover"
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "22px 96px 1fr auto",
+                  alignItems: "center",
+                  gap: 10,
+                  padding: "12px 6px",
+                  borderTop: "1px solid var(--rule-soft)",
+                }}
+              >
+                <span className="flag" style={{ fontSize: 14 }}>
+                  {f.countries?.flag_emoji}
                 </span>
-              </li>
+                <span
+                  className="mono"
+                  style={{ fontSize: 12, color: "var(--foreground)", letterSpacing: "0.02em", fontWeight: 500 }}
+                >
+                  {f.form_code}
+                </span>
+                <span style={{ fontSize: 12.5, color: "var(--ink-secondary)" }}>
+                  {humanStatus(f.status)}
+                </span>
+                <span className="mono tnum" style={{ fontSize: 11, letterSpacing: "0.02em", color }}>
+                  {dueLabel(days)}
+                </span>
+              </div>
             );
           })}
-        </ul>
+        </div>
       )}
 
-      <Link
-        href="/app/compliance/filings"
-        className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-4 decoration-[color:var(--rule)] hover:decoration-[color:var(--brand)]"
-      >
-        Full filings calendar →
-      </Link>
-    </section>
+      <div style={{ borderTop: "1px solid var(--rule)", marginTop: 10, paddingTop: 12 }}>
+        <Link
+          href="/app/compliance/filings"
+          className="mono"
+          style={{ fontSize: 11, color: "var(--ink-secondary)", letterSpacing: "0.08em", textDecoration: "none" }}
+        >
+          FILING CALENDAR →
+        </Link>
+      </div>
+    </div>
   );
 }

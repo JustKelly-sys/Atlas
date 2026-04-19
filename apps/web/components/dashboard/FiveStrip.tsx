@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { ArrowUpRight, Star } from "lucide-react";
-import { StatusTag, type FeatureStatus } from "@/components/shell/StatusTag";
 
 type Card = {
   eyebrow: string;
@@ -8,49 +6,118 @@ type Card = {
   metric: string;
   metricLabel: string;
   href: string;
-  status: FeatureStatus;
+  status: "live" | "prototype" | "roadmap";
+  tone?: "accent" | "crit" | "warn" | "ok";
+};
+
+const TONE_COLOR: Record<string, string> = {
+  accent: "var(--brand)",
+  crit: "var(--status-crit)",
+  warn: "var(--status-warn)",
+  ok: "var(--status-ok)",
 };
 
 export function FiveStrip({ cards }: { cards: Card[] }) {
   return (
-    <section className="space-y-4">
-      <header className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <p className="eyebrow">The Five</p>
-          <Star
-            className="h-3 w-3 fill-[color:var(--brand)] stroke-[color:var(--brand)]"
-            aria-hidden
-          />
-        </div>
-        <p className="text-[11px] text-muted-foreground">
-          Signature automations
-        </p>
-      </header>
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-        {cards.map((card) => (
-          <Link
-            key={card.name}
-            href={card.href}
-            className="group rounded-sm border border-[color:var(--rule)] bg-card p-4 space-y-3 hover:border-[color:var(--brand)] transition-colors"
-          >
-            <div className="flex items-start justify-between">
-              <p className="eyebrow text-[9px]">{card.eyebrow}</p>
-              <ArrowUpRight className="h-3.5 w-3.5 text-[color:var(--ink-tertiary)] group-hover:text-[color:var(--brand)] transition-colors" />
-            </div>
-            <h3 className="font-display text-lg leading-tight tracking-[-0.01em]">
-              {card.name}
-            </h3>
-            <div>
-              <p className="font-mono text-xl tabular-nums leading-none">
-                {card.metric}
-              </p>
-              <p className="text-[11px] text-muted-foreground mt-1.5 leading-tight">
-                {card.metricLabel}
-              </p>
-            </div>
-            <StatusTag status={card.status} />
-          </Link>
-        ))}
+    <section>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 16,
+          paddingBottom: 10,
+        }}
+      >
+        <span className="eyebrow">THE FIVE · AI AUTOMATIONS</span>
+        <span className="mono" style={{ fontSize: 10.5, color: "var(--ink-tertiary)", letterSpacing: "0.08em" }}>
+          5 LIVE
+        </span>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12 }}>
+        {cards.map((card) => {
+          const valueColor = card.tone ? TONE_COLOR[card.tone] : "var(--foreground)";
+          return (
+            <Link
+              key={card.name}
+              href={card.href}
+              className="row-hover"
+              style={{
+                padding: 20,
+                position: "relative",
+                display: "flex",
+                flexDirection: "column",
+                minHeight: 176,
+                border: "1px solid var(--rule)",
+                background: "var(--card)",
+                textDecoration: "none",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span
+                  className="mono"
+                  style={{ fontSize: 10.5, color: "var(--ink-tertiary)", letterSpacing: "0.1em" }}
+                >
+                  {card.eyebrow}
+                </span>
+                <span className="pill pill-live" style={{ padding: "1px 6px", fontSize: 9.5 }}>
+                  <span className="dot" /> Live
+                </span>
+              </div>
+
+              <div
+                className="serif"
+                style={{
+                  fontSize: 21,
+                  fontWeight: 400,
+                  color: "var(--foreground)",
+                  letterSpacing: "-0.015em",
+                  marginTop: 18,
+                  lineHeight: 1.1,
+                }}
+              >
+                {card.name}
+              </div>
+
+              <div style={{ flex: 1 }} />
+
+              <div style={{ marginTop: 14 }}>
+                <div
+                  className="serif tnum"
+                  style={{
+                    fontSize: 36,
+                    fontWeight: 400,
+                    lineHeight: 1,
+                    letterSpacing: "-0.02em",
+                    color: valueColor,
+                  }}
+                >
+                  {card.metric}
+                </div>
+                <div
+                  className="mono"
+                  style={{ fontSize: 10.5, color: "var(--ink-tertiary)", marginTop: 6, letterSpacing: "0.04em" }}
+                >
+                  {card.metricLabel}
+                </div>
+              </div>
+
+              <span
+                style={{
+                  position: "absolute",
+                  right: 16,
+                  bottom: 14,
+                  fontFamily: "var(--font-mono)",
+                  color: "var(--ink-tertiary)",
+                  fontSize: 14,
+                }}
+              >
+                →
+              </span>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

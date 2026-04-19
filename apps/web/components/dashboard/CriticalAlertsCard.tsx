@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { AlertTriangle, CircleAlert, Info } from "lucide-react";
-import { formatRelativeTime } from "@/lib/formatters";
 
 type Alert = {
   id: string;
@@ -11,73 +9,132 @@ type Alert = {
   created_at: string;
 };
 
-const SEVERITY_META = {
-  crit: { icon: CircleAlert, color: "var(--status-crit)", label: "crit" },
-  warn: { icon: AlertTriangle, color: "var(--status-warn)", label: "warn" },
-  info: { icon: Info, color: "var(--ink-tertiary)", label: "info" },
-} as const;
+const PILL_CLASS: Record<Alert["severity"], string> = {
+  crit: "pill-crit",
+  warn: "pill-warn",
+  info: "pill-neutral",
+};
+
+function timeSince(date: string) {
+  const diff = Date.now() - new Date(date).getTime();
+  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+  return `${Math.floor(diff / 86400000)}d ago`;
+}
 
 export function CriticalAlertsCard({ alerts }: { alerts: Alert[] }) {
   return (
-    <div className="rounded-sm border border-[color:var(--rule)] bg-card p-6 space-y-4 h-full flex flex-col">
-      <div className="flex items-center justify-between">
-        <p className="eyebrow">Critical alerts</p>
-        <span className="font-mono text-[10px] text-muted-foreground tabular-nums">
-          {alerts.length} unresolved
+    <div
+      style={{
+        border: "1px solid var(--rule)",
+        background: "var(--card)",
+        padding: 22,
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 14,
+        }}
+      >
+        <span className="eyebrow">NEEDS ATTENTION · {alerts.length}</span>
+        <span className="mono" style={{ fontSize: 10, color: "var(--ink-tertiary)" }}>
+          UNRESOLVED
         </span>
       </div>
 
       {alerts.length === 0 ? (
-        <p className="font-display text-xl text-muted-foreground flex-1 flex items-center">
+        <div
+          className="serif"
+          style={{
+            fontSize: 21,
+            fontWeight: 400,
+            color: "var(--ink-secondary)",
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
           All clear.
-        </p>
+        </div>
       ) : (
-        <ul className="space-y-3 flex-1">
-          {alerts.slice(0, 3).map((alert) => {
-            const meta = SEVERITY_META[alert.severity];
-            const Icon = meta.icon;
+        <div style={{ flex: 1 }}>
+          {alerts.slice(0, 4).map((a, i) => {
             const inner = (
-              <div className="flex items-start gap-3 group">
-                <Icon
-                  className="h-4 w-4 shrink-0 mt-0.5"
-                  style={{ color: meta.color }}
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium leading-tight group-hover:underline decoration-[color:var(--brand)] underline-offset-4">
-                    {alert.title}
-                  </p>
-                  {alert.body ? (
-                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                      {alert.body}
-                    </p>
-                  ) : null}
-                  <p className="text-[10px] text-[color:var(--ink-tertiary)] font-mono tabular-nums mt-1">
-                    {formatRelativeTime(alert.created_at)}
-                  </p>
+              <div
+                className="row-hover"
+                style={{
+                  padding: "14px 8px",
+                  borderTop: i === 0 ? "1px solid var(--rule)" : "1px solid var(--rule-soft)",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                  <span className={`pill ${PILL_CLASS[a.severity]}`} style={{ padding: "1px 6px" }}>
+                    {a.severity.toUpperCase()}
+                  </span>
+                  <span
+                    className="mono"
+                    style={{ fontSize: 10, color: "var(--ink-tertiary)", marginLeft: "auto" }}
+                  >
+                    {timeSince(a.created_at)}
+                  </span>
                 </div>
+                <div
+                  className="serif"
+                  style={{
+                    fontSize: 17,
+                    fontWeight: 400,
+                    color: "var(--foreground)",
+                    letterSpacing: "-0.01em",
+                    lineHeight: 1.25,
+                  }}
+                >
+                  {a.title}
+                </div>
+                {a.body && (
+                  <div style={{ fontSize: 12, color: "var(--ink-secondary)", marginTop: 4 }}>
+                    {a.body}
+                  </div>
+                )}
+                {a.link_url && (
+                  <div
+                    className="mono"
+                    style={{ fontSize: 10.5, color: "var(--ink-tertiary)", marginTop: 8, letterSpacing: "0.08em" }}
+                  >
+                    → {a.link_url.replace(/^https?:\/\//, "").split("/")[0]}
+                  </div>
+                )}
               </div>
             );
             return (
-              <li key={alert.id}>
-                {alert.link_url ? (
-                  <Link href={alert.link_url}>{inner}</Link>
+              <div key={a.id}>
+                {a.link_url ? (
+                  <Link href={a.link_url} style={{ textDecoration: "none" }}>
+                    {inner}
+                  </Link>
                 ) : (
                   inner
                 )}
-              </li>
+              </div>
             );
           })}
-        </ul>
+        </div>
       )}
 
-      {alerts.length > 3 ? (
+      <div style={{ borderTop: "1px solid var(--rule-soft)", paddingTop: 10, marginTop: 6 }}>
         <Link
           href="/app/compliance/audit"
-          className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-4"
+          className="mono"
+          style={{ fontSize: 11, color: "var(--ink-secondary)", letterSpacing: "0.06em", textDecoration: "none" }}
         >
-          View all {alerts.length} →
+          ALL ALERTS →
         </Link>
-      ) : null}
+      </div>
     </div>
   );
 }

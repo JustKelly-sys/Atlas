@@ -5,7 +5,7 @@ export const fontDisplay = Fraunces({
   subsets: ["latin"],
   variable: "--font-fraunces",
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  weight: "variable",
   axes: ["opsz", "SOFT"],
 });
 

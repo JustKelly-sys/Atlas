@@ -1,95 +1,81 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
 
 export default function SignInPage() {
-  const [email, setEmail] = useState("demo@atlas-ops.app");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const trimmed = name.trim();
+    if (!trimmed) return;
     setLoading(true);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    const res = await fetch("/api/auth/enter", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: trimmed }),
+      redirect: "follow",
     });
-    setLoading(false);
-    if (error) {
-      toast.error(error.message);
-      return;
+    if (res.redirected) {
+      window.location.href = res.url;
+    } else if (res.ok) {
+      window.location.href = "/app/dashboard";
+    } else {
+      setLoading(false);
     }
-    router.push("/app/dashboard");
-    router.refresh();
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <div className="space-y-3">
-        <p className="eyebrow">Atlas · Sign in</p>
-        <h1 className="display-lg">Welcome back.</h1>
+        <p className="eyebrow">Atlas · Operations</p>
+        <h1 className="serif" style={{ fontSize: 42, fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.1 }}>
+          What should we call you?
+        </h1>
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <label htmlFor="email" className="text-sm text-muted-foreground">
-            Email
-          </label>
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="password" className="text-sm text-muted-foreground">
-            Password
-          </label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-            required
-          />
-        </div>
-        <Button
+      <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="First name"
+          autoFocus
+          autoComplete="given-name"
+          style={{
+            height: 48,
+            width: "100%",
+            border: "1px solid var(--rule)",
+            background: "var(--surface-2)",
+            padding: "0 16px",
+            fontSize: 15,
+            color: "var(--foreground)",
+            outline: "none",
+            fontFamily: "var(--font-geist-sans)",
+          }}
+          onFocus={(e) => (e.target.style.borderColor = "var(--brand)")}
+          onBlur={(e) => (e.target.style.borderColor = "var(--rule)")}
+        />
+        <button
           type="submit"
-          disabled={loading}
-          className="w-full bg-[color:var(--brand)] hover:bg-[color:var(--brand-hover)] text-[color:var(--primary-foreground)]"
-          size="lg"
+          disabled={!name.trim() || loading}
+          style={{
+            height: 48,
+            background: "var(--brand)",
+            color: "#fff",
+            border: "none",
+            fontSize: 13,
+            fontFamily: "var(--font-jetbrains-mono)",
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            cursor: name.trim() && !loading ? "pointer" : "not-allowed",
+            opacity: name.trim() && !loading ? 1 : 0.4,
+          }}
         >
-          {loading ? "Signing in…" : "Sign in"}
-        </Button>
+          {loading ? "Entering…" : "Enter Atlas →"}
+        </button>
       </form>
-
-      <div className="text-sm text-muted-foreground space-y-2">
-        <p>
-          Demo login: <span className="font-mono">demo@atlas-ops.app</span> —
-          password in README.
-        </p>
-        <p>
-          Need an account?{" "}
-          <Link
-            href="/sign-up"
-            className="underline decoration-[color:var(--brand)] underline-offset-4"
-          >
-            Create one
-          </Link>
-        </p>
-      </div>
     </div>
   );
 }

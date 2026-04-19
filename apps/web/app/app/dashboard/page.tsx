@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { CycleStatusCard } from "@/components/dashboard/CycleStatusCard";
@@ -11,13 +12,9 @@ import { UpcomingFilings } from "@/components/dashboard/UpcomingFilings";
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
+  const cookieStore = await cookies();
+  const firstName = decodeURIComponent(cookieStore.get("atlas_name")?.value ?? "there");
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const firstName =
-    (user?.user_metadata as { full_name?: string })?.full_name?.split(" ")[0] ??
-    "there";
 
   // Fetch everything in parallel — server component, so it all happens in one render
   const [

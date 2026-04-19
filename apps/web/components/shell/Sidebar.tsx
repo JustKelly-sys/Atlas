@@ -2,161 +2,262 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { StatusTag, type FeatureStatus } from "./StatusTag";
-import { Star } from "lucide-react";
+import { useState } from "react";
 
-type NavItem = {
-  label: string;
-  href?: string;
-  status?: FeatureStatus;
-  signature?: boolean;
-  children?: NavItem[];
-};
+type NavChild = { label: string; href: string; tag?: string };
+type NavItem =
+  | { label: string; href: string; tag?: string; section?: string; children?: never }
+  | { label: string; children: NavChild[]; href?: never; tag?: never; section?: never };
 
 const NAV: NavItem[] = [
-  { label: "Dashboard", href: "/app/dashboard", status: "live" },
+  { label: "Dashboard", href: "/app/dashboard" },
   {
     label: "Payroll",
-    status: "live",
     children: [
-      { label: "Cycle", href: "/app/payroll/cycle", status: "live" },
-      { label: "Inputs", href: "/app/payroll/inputs", status: "live", signature: true },
-      { label: "Runs", href: "/app/payroll/runs", status: "live" },
-      { label: "Variance", href: "/app/payroll/variance", status: "live", signature: true },
-      { label: "FX Watchdog", href: "/app/payroll/fx", status: "live", signature: true },
+      { label: "Cycle",       href: "/app/payroll/cycle" },
+      { label: "Inputs",      href: "/app/payroll/inputs",   tag: "Live" },
+      { label: "Runs",        href: "/app/payroll/runs" },
+      { label: "Variance",    href: "/app/payroll/variance", tag: "Live" },
+      { label: "FX Watchdog", href: "/app/payroll/fx",       tag: "Live" },
     ],
   },
   {
     label: "People",
-    status: "live",
     children: [
-      { label: "Directory", href: "/app/people/directory", status: "live" },
-      { label: "Onboarding", href: "/app/people/onboarding", status: "prototype" },
-      { label: "Terminations", href: "/app/people/terminations", status: "live", signature: true },
+      { label: "Directory",    href: "/app/people/directory" },
+      { label: "Onboarding",   href: "/app/people/onboarding",   tag: "Prototype" },
+      { label: "Terminations", href: "/app/people/terminations",  tag: "Live" },
     ],
   },
   {
     label: "Compliance",
-    status: "live",
     children: [
-      { label: "Filings", href: "/app/compliance/filings", status: "live" },
-      { label: "Calendar", href: "/app/compliance/calendar", status: "live", signature: true },
-      { label: "Audit Trail", href: "/app/compliance/audit", status: "prototype" },
+      { label: "Filings",    href: "/app/compliance/filings",  tag: "Prototype" },
+      { label: "Calendar",   href: "/app/compliance/calendar", tag: "Live" },
+      { label: "Audit Trail",href: "/app/compliance/audit" },
     ],
   },
-  { label: "Automations", href: "/app/automations", status: "live" },
-  { label: "Integrations", href: "/app/integrations", status: "prototype" },
-  { label: "Reports", href: "/app/reports", status: "prototype" },
-  { label: "Settings", href: "/app/settings", status: "roadmap" },
+  { label: "Automations",  href: "/app/automations",  tag: "Live" },
+  { label: "Integrations", href: "/app/integrations", tag: "Prototype" },
+  { label: "Reports",      href: "/app/reports",      tag: "Prototype" },
+  { label: "Settings",     href: "/app/settings",     tag: "Roadmap" },
 ];
+
+const REVIEWER_NAV: NavItem[] = [
+  { label: "Why Atlas", href: "/app/why-atlas" },
+];
+
+function TagPill({ tag }: { tag: string }) {
+  const cls =
+    tag === "Live"      ? "pill-live"  :
+    tag === "Prototype" ? "pill-proto" :
+    "pill-road";
+  return (
+    <span className={`pill ${cls}`} style={{ padding: "0 5px", fontSize: 9.5, letterSpacing: "0.1em" }}>
+      {tag === "Live" && <span className="dot" />}
+      {tag}
+    </span>
+  );
+}
+
+function NavRow({
+  label,
+  href,
+  tag,
+  active,
+  indent = false,
+}: {
+  label: string;
+  href: string;
+  tag?: string;
+  active: boolean;
+  indent?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        padding: indent ? "5px 10px 5px 18px" : "6px 10px",
+        fontFamily: "var(--font-sans)",
+        fontSize: 13,
+        background: active ? "var(--surface-2)" : "transparent",
+        color: active ? "var(--foreground)" : "var(--ink-secondary)",
+        borderRadius: 2,
+        cursor: "pointer",
+        fontWeight: active ? 500 : 400,
+        marginBottom: 1,
+        textDecoration: "none",
+        transition: "background 120ms",
+      }}
+      className="row-hover"
+    >
+      <span style={{ flex: 1 }}>{label}</span>
+      {tag && <TagPill tag={tag} />}
+      {active && (
+        <span className="mono" style={{ fontSize: 10, color: "var(--brand)" }}>●</span>
+      )}
+    </Link>
+  );
+}
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({
+    Payroll: true,
+    People: true,
+    Compliance: true,
+  });
+
+  const toggle = (label: string) =>
+    setExpanded((prev) => ({ ...prev, [label]: !prev[label] }));
+
+  const renderItem = (item: NavItem, keyPrefix = "") => {
+    if (!item.children) {
+      const active = pathname.startsWith(item.href!);
+      return (
+        <NavRow
+          key={keyPrefix + item.label}
+          label={item.label}
+          href={item.href!}
+          tag={item.tag}
+          active={active}
+        />
+      );
+    }
+    const open = !!expanded[item.label];
+    const anyActive = item.children.some((c) => pathname.startsWith(c.href));
+    return (
+      <div key={keyPrefix + item.label}>
+        <button
+          onClick={() => toggle(item.label)}
+          className="row-hover"
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "10px 10px 5px",
+            fontFamily: "var(--font-mono)",
+            fontSize: 10.5,
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            color: anyActive ? "var(--foreground)" : "var(--ink-tertiary)",
+            background: "transparent",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          <span style={{ flex: 1, textAlign: "left" }}>{item.label}</span>
+          <span style={{ fontSize: 9 }}>{open ? "−" : "+"}</span>
+        </button>
+        {open && (
+          <div style={{ marginBottom: 6 }}>
+            {item.children.map((c) => (
+              <NavRow
+                key={c.href}
+                label={c.label}
+                href={c.href}
+                tag={c.tag}
+                active={pathname.startsWith(c.href)}
+                indent
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
-    <aside className="w-[260px] shrink-0 h-screen sticky top-0 bg-[color:var(--sidebar)] border-r border-[color:var(--sidebar-border)] flex flex-col">
+    <aside
+      style={{
+        width: "var(--shell-sidebar, 240px)",
+        flexShrink: 0,
+        height: "100vh",
+        position: "sticky",
+        top: 0,
+        background: "var(--card)",
+        borderRight: "1px solid var(--rule)",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       {/* Wordmark */}
-      <div className="px-6 py-6 border-b border-[color:var(--sidebar-border)]">
-        <Link href="/app/dashboard" className="block">
-          <span className="font-display text-2xl tracking-[-0.02em] text-[color:var(--sidebar-foreground)]">
-            Atlas
-          </span>
-          <span className="eyebrow block mt-1">Payroll operations</span>
+      <div style={{ padding: "18px 20px 16px", borderBottom: "1px solid var(--rule)" }}>
+        <Link href="/app/dashboard" style={{ textDecoration: "none" }}>
+          <div
+            className="serif"
+            style={{ fontSize: 20, fontWeight: 500, letterSpacing: "-0.01em", color: "var(--foreground)" }}
+          >
+            ATLAS
+          </div>
+          <div
+            className="mono"
+            style={{ fontSize: 10, color: "var(--ink-tertiary)", letterSpacing: "0.1em", marginTop: 2 }}
+          >
+            OPERATIONS
+          </div>
         </Link>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto px-3 py-5 space-y-5">
-        {NAV.map((item) => (
-          <SidebarGroup key={item.label} item={item} pathname={pathname} />
-        ))}
+      <nav style={{ flex: 1, overflowY: "auto", padding: "12px 10px 14px" }}>
+        {NAV.map((item) => renderItem(item))}
+
+        {/* FOR REVIEWERS */}
+        <div style={{ marginTop: 22, paddingTop: 12, borderTop: "1px solid var(--rule)" }}>
+          <div className="eyebrow" style={{ padding: "0 10px 8px", fontSize: 9.5, color: "var(--ink-tertiary)" }}>
+            FOR REVIEWERS
+          </div>
+          {REVIEWER_NAV.map((item) => renderItem(item, "rv-"))}
+          <a
+            href="/"
+            className="row-hover"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "6px 10px",
+              fontFamily: "var(--font-sans)",
+              fontSize: 13,
+              color: "var(--ink-secondary)",
+              textDecoration: "none",
+              borderRadius: 2,
+            }}
+          >
+            <span style={{ flex: 1 }}>Marketing site</span>
+            <span className="mono" style={{ fontSize: 10, color: "var(--ink-tertiary)" }}>↗</span>
+          </a>
+        </div>
       </nav>
 
-      {/* Footer */}
-      <div className="px-6 py-5 border-t border-[color:var(--sidebar-border)] space-y-2">
-        <p className="eyebrow">FY 2026 · Q2</p>
-        <p className="text-xs text-[color:var(--ink-tertiary)]">
-          All systems operational
-        </p>
+      {/* User avatar */}
+      <div style={{ borderTop: "1px solid var(--rule)", padding: "12px 16px", display: "flex", alignItems: "center", gap: 10 }}>
+        <div
+          style={{
+            width: 28, height: 28, borderRadius: 2,
+            background: "var(--brand)",
+            color: "#FAF5E7",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 600, letterSpacing: "0.02em",
+            flexShrink: 0,
+          }}
+        >
+          TJ
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 13, fontWeight: 500, color: "var(--foreground)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            Tshepiso Jafta
+          </div>
+          <div className="mono" style={{ fontSize: 10, color: "var(--ink-tertiary)", letterSpacing: "0.08em" }}>
+            DEMO ORG
+          </div>
+        </div>
+        <span className="mono" style={{ fontSize: 11, color: "var(--ink-tertiary)" }}>⌄</span>
       </div>
     </aside>
-  );
-}
-
-function SidebarGroup({
-  item,
-  pathname,
-}: {
-  item: NavItem;
-  pathname: string;
-}) {
-  const isActive = item.href ? pathname.startsWith(item.href) : false;
-
-  if (!item.children) {
-    return <SidebarLink item={item} active={isActive} />;
-  }
-
-  const anyChildActive = item.children.some(
-    (c) => c.href && pathname.startsWith(c.href),
-  );
-
-  return (
-    <div className="space-y-1">
-      <div
-        className={cn(
-          "px-3 text-xs font-medium tracking-wide",
-          anyChildActive
-            ? "text-[color:var(--sidebar-foreground)]"
-            : "text-[color:var(--ink-tertiary)]",
-        )}
-      >
-        {item.label}
-      </div>
-      <div className="space-y-0.5">
-        {item.children.map((child) => (
-          <SidebarLink
-            key={child.href ?? child.label}
-            item={child}
-            active={Boolean(child.href && pathname.startsWith(child.href))}
-            indent
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SidebarLink({
-  item,
-  active,
-  indent = false,
-}: {
-  item: NavItem;
-  active: boolean;
-  indent?: boolean;
-}) {
-  if (!item.href) return null;
-  return (
-    <Link
-      href={item.href}
-      className={cn(
-        "flex items-center justify-between gap-2 rounded-sm px-3 py-1.5 text-sm transition-colors",
-        indent ? "pl-5" : "pl-3",
-        active
-          ? "bg-[color:var(--sidebar-accent)] text-[color:var(--sidebar-accent-foreground)] font-medium"
-          : "text-[color:var(--sidebar-foreground)]/80 hover:text-[color:var(--sidebar-foreground)] hover:bg-[color:var(--sidebar-accent)]/50",
-      )}
-    >
-      <span className="flex items-center gap-2 min-w-0">
-        <span className="truncate">{item.label}</span>
-        {item.signature ? (
-          <Star
-            className="h-3 w-3 shrink-0 fill-[color:var(--brand)] stroke-[color:var(--brand)]"
-            aria-label="Signature automation"
-          />
-        ) : null}
-      </span>
-    </Link>
   );
 }
