@@ -1,5 +1,7 @@
 "use client";
 
+import { CountryFlag } from "@/components/ui/CountryFlag";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, AlertOctagon, Info, ArrowRight } from "lucide-react";
@@ -85,9 +87,7 @@ export function ConflictPanel({
                   />
                   <div className="flex-1 min-w-0 space-y-1.5">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-base leading-none">
-                        {c.countries?.flag_emoji}
-                      </span>
+                      {c.countries?.iso_code && <CountryFlag isoCode={c.countries.iso_code} size={14} />}
                       <p className="text-sm font-medium">
                         {c.countries?.name}
                       </p>

@@ -1,5 +1,7 @@
 "use client";
 
+import { CountryFlag } from "@/components/ui/CountryFlag";
+
 import { cn } from "@/lib/utils";
 import { formatDate, daysUntil } from "@/lib/formatters";
 import { UserMinus, Clock, CheckCircle2 } from "lucide-react";
@@ -127,9 +129,9 @@ function Row({
           <span className="text-sm font-medium truncate flex-1 min-w-0">
             {t.employees?.full_name ?? "—"}
           </span>
-          <span className="text-base leading-none shrink-0">
-            {t.employees?.countries?.flag_emoji}
-          </span>
+          {t.employees?.countries?.iso_code && (
+            <CountryFlag isoCode={t.employees.countries.iso_code} size={14} />
+          )}
         </div>
         <p className="font-mono text-[11px] text-[color:var(--ink-tertiary)] truncate">
           {TYPE_LABEL[t.termination_type]} · {t.employees?.role_title ?? "—"}

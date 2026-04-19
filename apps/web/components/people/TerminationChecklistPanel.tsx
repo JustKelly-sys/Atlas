@@ -1,5 +1,7 @@
 "use client";
 
+import { CountryFlag } from "@/components/ui/CountryFlag";
+
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -189,8 +191,8 @@ export function TerminationChecklistPanel({
               {termination.employees?.role_title} · {termination.employees?.email}
             </p>
           </div>
-          <div className="text-2xl leading-none shrink-0">
-            {country?.flag_emoji}
+          <div className="shrink-0">
+            {country?.iso_code && <CountryFlag isoCode={country.iso_code} size={24} />}
           </div>
         </div>
 

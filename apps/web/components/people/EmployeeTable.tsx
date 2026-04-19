@@ -1,5 +1,7 @@
 "use client";
 
+import { CountryFlag } from "@/components/ui/CountryFlag";
+
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -78,9 +80,7 @@ export function EmployeeTable({ rows }: { rows: EmployeeRow[] }) {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-base">
-                        {e.countries?.flag_emoji}
-                      </span>
+                      {e.countries?.iso_code && <CountryFlag isoCode={e.countries.iso_code} size={14} />}
                       <span className="text-sm">
                         {e.countries?.name}
                       </span>
