@@ -1,6 +1,6 @@
 # Atlas — Payroll Operations Dashboard
 
-> A production-grade payroll ops platform built as a portfolio piece targeting Playroll. Covers 6 jurisdictions, 17 Supabase tables, 3 Python microservices, and a self-hosted n8n automation layer — all wired to a live Next.js 16 dashboard.
+> A production-grade payroll ops platform. Covers 6 jurisdictions, 17 Supabase tables, 3 Python microservices, and a self-hosted n8n automation layer — all wired to a live Next.js 16 dashboard.
 
 **Live:** [atlas-playroll.vercel.app](https://atlas-playroll.vercel.app) · **Sign in with:** any name
 
