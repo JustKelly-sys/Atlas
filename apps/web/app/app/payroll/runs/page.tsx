@@ -1,3 +1,4 @@
+import { CountryFlag } from "@/components/ui/CountryFlag";
 import Link from "next/link";
 import { createServiceRoleClient as createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/shell/PageHeader";
@@ -79,9 +80,7 @@ export default async function RunsPage() {
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-base">
-                      {r.payroll_cycles?.countries?.flag_emoji}
-                    </span>
+                    {r.payroll_cycles?.countries?.iso_code && <CountryFlag isoCode={r.payroll_cycles.countries.iso_code} size={16} />}
                     <span className="text-sm">
                       {r.payroll_cycles?.countries?.name ?? "—"}
                     </span>

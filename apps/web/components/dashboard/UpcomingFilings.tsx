@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { daysUntil } from "@/lib/formatters";
+import { CountryFlag } from "@/components/ui/CountryFlag";
 
 type Filing = {
   id: string;
@@ -79,9 +80,7 @@ export function UpcomingFilings({ filings }: { filings: Filing[] }) {
                   borderTop: "1px solid var(--rule-soft)",
                 }}
               >
-                <span className="flag" style={{ fontSize: 14 }}>
-                  {f.countries?.flag_emoji}
-                </span>
+                {f.countries?.iso_code && <CountryFlag isoCode={f.countries.iso_code} size={14} />}
                 <span
                   className="mono"
                   style={{ fontSize: 12, color: "var(--foreground)", letterSpacing: "0.02em", fontWeight: 500 }}

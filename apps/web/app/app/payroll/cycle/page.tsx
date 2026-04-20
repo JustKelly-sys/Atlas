@@ -1,3 +1,4 @@
+import { CountryFlag } from "@/components/ui/CountryFlag";
 import { createServiceRoleClient as createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { CycleGantt } from "@/components/payroll/CycleGantt";
@@ -115,9 +116,7 @@ export default async function CyclePage() {
               >
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-base">
-                      {c.countries?.flag_emoji}
-                    </span>
+                    {c.countries?.iso_code && <CountryFlag isoCode={c.countries.iso_code} size={16} />}
                     <span className="text-sm">{c.countries?.name}</span>
                     <span className="font-mono text-[10px] text-[color:var(--ink-tertiary)]">
                       {c.countries?.timezone ?? c.countries?.iso_code}

@@ -1,3 +1,4 @@
+import { CountryFlag } from "@/components/ui/CountryFlag";
 import { createServiceRoleClient as createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { daysUntil } from "@/lib/formatters";
@@ -139,7 +140,7 @@ export default async function FilingsPage() {
                   columnGap: 16,
                 }}
               >
-                <span className="flag" style={{ fontSize: 16 }}>{f.countries?.flag_emoji}</span>
+                {f.countries?.iso_code && <CountryFlag isoCode={f.countries.iso_code} size={16} />}
                 <span className="mono" style={{ fontSize: 12, color: "var(--foreground)", fontWeight: 500 }}>
                   {f.form_code}
                 </span>

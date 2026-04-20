@@ -141,9 +141,7 @@ export function EmployeeTable({ rows }: { rows: EmployeeRow[] }) {
             <>
               <SheetHeader className="px-6 py-5 border-b border-[color:var(--rule)]">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-base">
-                    {selected.countries?.flag_emoji}
-                  </span>
+                  {selected.countries?.iso_code && <CountryFlag isoCode={selected.countries.iso_code} size={18} />}
                   <p className="eyebrow">{selected.countries?.name}</p>
                 </div>
                 <SheetTitle className="font-display text-2xl tracking-[-0.01em]">
