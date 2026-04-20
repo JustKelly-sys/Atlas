@@ -2,7 +2,7 @@
 
 > A production-grade payroll ops platform. Covers 6 jurisdictions, 17 Supabase tables, 3 Python microservices, and a self-hosted n8n automation layer — all wired to a live Next.js 16 dashboard.
 
-**Live:** [atlas-playroll.vercel.app](https://atlas-playroll.vercel.app) · **Sign in with:** any name
+**Live:** [atlas-web-zeta.vercel.app](https://atlas-web-zeta.vercel.app) · **Sign in with:** any name
 
 ---
 
