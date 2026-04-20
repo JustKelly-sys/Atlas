@@ -75,17 +75,15 @@ export function AskInClaudeDrawer() {
 
   return (
     <Sheet>
-      <SheetTrigger
-        render={
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-[color:var(--brand)] text-[color:var(--brand)] hover:bg-[color:var(--brand)]/10"
-          />
-        }
-      >
-        <MessageSquareText className="h-3.5 w-3.5 mr-2" />
-        Ask in Claude
+      <SheetTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="border-[color:var(--brand)] text-[color:var(--brand)] hover:bg-[color:var(--brand)]/10"
+        >
+          <MessageSquareText className="h-3.5 w-3.5 mr-2" />
+          Ask in Claude
+        </Button>
       </SheetTrigger>
 
       <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0">

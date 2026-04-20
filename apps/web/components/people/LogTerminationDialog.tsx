@@ -103,16 +103,14 @@ export function LogTerminationDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button
-            size="sm"
-            className="bg-[color:var(--brand)] hover:bg-[color:var(--brand-hover)] text-[color:var(--primary-foreground)]"
-          />
-        }
-      >
-        <UserMinus className="h-3.5 w-3.5 mr-2" />
-        Log termination
+      <DialogTrigger asChild>
+        <Button
+          size="sm"
+          className="bg-[color:var(--brand)] hover:bg-[color:var(--brand-hover)] text-[color:var(--primary-foreground)]"
+        >
+          <UserMinus className="h-3.5 w-3.5 mr-2" />
+          Log termination
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-md">
