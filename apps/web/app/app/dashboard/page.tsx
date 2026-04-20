@@ -197,34 +197,36 @@ export default async function DashboardPage() {
   return (
     <div>
       {/* Hero block — greeting + primary ops status */}
-      <PageHeader
-        eyebrow="Operations · April 2026"
-        title={`Good morning, ${firstName}.`}
-        subtitle={`${currentCycles.length} ${currentCycles.length === 1 ? "country" : "countries"} open for input. Nearest cutoff in under 72 hours.`}
-      />
+      <div className="fade-up">
+        <PageHeader
+          eyebrow="Operations · April 2026"
+          title={`Good morning, ${firstName}.`}
+          subtitle={`${currentCycles.length} ${currentCycles.length === 1 ? "country" : "countries"} open for input. Nearest cutoff in under 72 hours.`}
+        />
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 mt-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 mt-8 fade-up-1">
         <CycleStatusCard cycles={currentCycles} />
         <CriticalAlertsCard alerts={alerts} />
       </div>
 
       {/* Automation strip — tighter to the ops block above */}
-      <div className="mt-8">
+      <div className="mt-8 fade-up-2">
         <FiveStrip cards={fiveCards} />
       </div>
 
       {/* KPI strip — secondary, wider gap signals new section */}
-      <div className="mt-14">
+      <div className="mt-14 fade-up-3">
         <KpiStrip kpis={kpis} />
       </div>
 
       {/* Country overview */}
-      <div className="mt-10">
+      <div className="mt-10 fade-up-4">
         <CountryGrid countries={countries} currentCycles={currentCycles} />
       </div>
 
       {/* Activity + filings — widest gap, bottom of page */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-14">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-14 fade-up-5">
         <ActivityFeed events={audit} />
         <UpcomingFilings filings={filings} />
       </div>
